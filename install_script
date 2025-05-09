@@ -1,0 +1,14 @@
+#!/bin/bash
+
+pkg upgrade -y
+pkg install git python -y
+git clone https://github.com/krasilniko18/fenix-test_solver.git
+pip install requests
+pip install timedelta
+pip install bs4
+
+
+echo alias test=\"python fenix-test_solver/main.py\" > .bashrc
+echo alias cls=\"clear\" >> .bashrc
+echo clear >> .bashrc
+exit
