@@ -478,8 +478,8 @@ def main():
     auth_bool = False
     num_of_mistakes_ot = 1
     num_of_mistakes_do = 4
-    time_to_wait_ot = 300
-    time_to_wait_do = 500
+    time_to_wait_ot = 420
+    time_to_wait_do = 660
     print("Добро пожаловать!!! ")
     
     while True:
@@ -1099,7 +1099,7 @@ def main():
                         time_before = datetime.datetime.now()
                         for i in range(30):
                             check_first_and_next()
-                            time.sleep(0.300)
+                            time.sleep(1)
                         time_after = datetime.datetime.now()
                         time_elapsed = str(time_after-time_before)
                         for i in range(len(time_elapsed)):
@@ -1117,13 +1117,16 @@ def main():
                         for i in range(30):
                             space = ""
                             if (i+1) < 10: space = " "
-
+                            
+                            time.sleep(1)
                             var1 = go_to_check_answer5()
+                            
                             if var1 == False:
                                 crytical_error = True
                                 break
-                            
+                            time.sleep(1)
                             new_list = check_some_case_and_next(var1)
+                            
                             print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Вопрос {i+1}{space}: {new_list}")
                             time.sleep(0.250)
 
