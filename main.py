@@ -1,13 +1,15 @@
-import os
+#Добро пожаловать в исходный код!
+#Любознательность - наше всё!!!
 
 #1. возвращен requests (+)
-#2. есть проерка на ошибки, но не весь пользовательский ввод
-#3. нет гита
+#2. есть проверка на ошибки, но не весь пользовательский ввод проверяется достаточно
+#3. есть гит (+)
 #4. нет парсера ввода номеров тестов
 #5. нет тг бота
 #6. нет защиты от временного дисконекта (+)
+#7. дима пошел нахер (+++)
 
-
+import os
 import requests
 import time, random, datetime, timedelta, string
 from bs4 import BeautifulSoup
@@ -401,10 +403,6 @@ def admin():
         if choice == "0":
             login = user_input("Login: ")
             password = user_input("Passd: ")
-            if login == "":
-                login = "1023041"
-            if password == "":
-                password = "Kwnsbwjw8"
             auth(login, password)
         elif choice == "1":
             try:
