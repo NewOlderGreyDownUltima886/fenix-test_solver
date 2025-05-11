@@ -152,7 +152,7 @@ def get_pass():
 #Авторизация
 #POST /eport/eport/Default.aspx
 # возвращает тру\фолс
-def auth(login1="", password1=""):
+def auth(login1="", password1="", silence=False):
     if (login1 == "") and (password1 == ""):
         login1 = get_login()
         password1 = get_pass()
@@ -171,7 +171,8 @@ def auth(login1="", password1=""):
     if len(b) > 0:
         if "Здравствуйте" in b[0].text:
             #print("\n---------------------------------------------------------------")
-            print(f'\n{str(b[0].text)[:-33]}!')
+            if silence == True:
+                print(f'\n{str(b[0].text)[:-33]}!')
             return True
         else:
             print(f"ERROR AUTH (1) < error: {b}")
@@ -1162,7 +1163,7 @@ def main():
                     time.sleep(time_to_wait)
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
                     
-                    auth()
+                    auth(silence=True)
                     #конец
                     close_test()
                     results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
