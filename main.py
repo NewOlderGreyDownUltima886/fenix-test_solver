@@ -1092,8 +1092,17 @@ def main():
                 elif proverka == False:
                     soup = BeautifulSoup(a.text, 'html.parser')
                     b = soup.select('div[id="ctl00_MainContent_Panel1"] > label')
-        
-                    name_of_test = (b[0].text).strip()
+                    name_of_test = "Error_name" 
+                    try:
+                        name_of_test = (b[0].text).strip()
+                    except Exception:
+                        name_of_test ="Error_name" 
+                        try:
+                            if auth():
+                                name_of_test = (b[0].text).strip()
+                        except Exception:
+                            pass
+                    
                     name_of_pred = name_pred_r
 
                     c = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
