@@ -171,7 +171,7 @@ def auth(login1="", password1="", silence=False):
     if len(b) > 0:
         if "Здравствуйте" in b[0].text:
             #print("\n---------------------------------------------------------------")
-            if silence == True:
+            if silence == False:
                 print(f'\n{str(b[0].text)[:-33]}!')
             return True
         else:
