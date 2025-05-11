@@ -1162,7 +1162,7 @@ def main():
                     time.sleep(time_to_wait)
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
                     
-                    
+                    auth()
                     #конец
                     close_test()
                     results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
