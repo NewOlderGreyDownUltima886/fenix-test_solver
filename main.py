@@ -96,6 +96,10 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
         for i in b:
             if "На портале могут работать только зарегистрированные пользователи" in i.text:
                 return False
+        b1 = soup.select('script[type="text/javascript"]')
+        for i in range(len(b1)):
+            if "необходима авторизация" in b1[i].text:
+                return False
         return True
 
     if test_na_diskonekt_izza_istekshey_sessii(a):
@@ -116,11 +120,11 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
             #    make_a_request(url, data, silens, streaming)
             #else: 
             num_of_error+=1
-            num_of_error_vsego = 3
+            num_of_error_vsego = 10
             if num_of_error <= num_of_error_vsego:
-                print(f"СДОХЛА СЕССИЯ {get_login()}:{get_pass()}!!! Пробую ещё раз через 10 секунд({num_of_error}/{num_of_error_vsego})")
+                print(f"\nСДОХЛА СЕССИЯ {get_login()}:{get_pass()}!!! Пробую ещё раз через 10 секунд ({num_of_error}/{num_of_error_vsego})")
                 time.sleep(10)
-                auth()
+                auth(silence=True) 
                 return make_a_request(url, data, silens, streaming, num_of_error=num_of_error)
             else:
                 print("Не получается авторизоваться, проверьте подключение к интернету!!!\n—————>Выхожу...")
@@ -207,15 +211,15 @@ def chose_some_test_from_list():
         num = str(i+1)
         space = ""
         if i < 9: space += " "
-
-
-        print(f"\t{num}.{space} {pred_list[i].text}")
+        print(f"\t{num}.{space} {pred_list[i].text}") 
+    print("\t0. Вернуться") 
     try:
         num_of_pred = int(user_input("\nВыберите предмет из списка: ")) - 1
     except ValueError:
         print("hui1")
         return False
-    
+    if num_of_pred == "0":
+        return "0"
     if (num_of_pred > (len(pred_list)-1)) or (num_of_pred < 0):
         print("hui2")
         return False
@@ -272,9 +276,11 @@ def chose_some_test_from_list():
         #формируем процент выполненности или невыполненности:
         print(f"\t{num}.{space} ({persent}) {num_test} | {name_test}")
     
-    
+    print("\t0. Вернуться")
     try:
         num_of_test = int(user_input("\nC какого теста начать (по счёту): ")) - 1
+        if num_of_test == "0":
+            return "0"
         if (num_of_test > (len(test_name_list)-1)) or (num_of_test < 0):
             print("hui3")
             return False
@@ -971,6 +977,8 @@ def main():
                 #допытываем от пользователя номер предмета и тесты
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
+                    if list_of_preds_and_tests == "0":
+                        break
                     if list_of_preds_and_tests == False:
                         print("\nБудьте внимательнее! Пробуем ещё раз...")
                         continue
@@ -1163,7 +1171,7 @@ def main():
                     time.sleep(time_to_wait)
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
                     
-                    auth(silence=True)
+                    #auth(silence=True)
                     #конец
                     close_test()
                     results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
