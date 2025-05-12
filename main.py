@@ -38,26 +38,23 @@ def user_input(str1):
 
 SessionId=""
 
-def get_new_session_id():
+def set_new_session_id():
     a = requests.get("http://eport.fesmu.ru/eport/eport/Default.aspx", headers=headers1)
     try:
         set_cookies = str(a.headers["Set-Cookie"]).strip()
         if "ASP.NET_SessionId" in set_cookies:
             set_cookies = set_cookies[(set_cookies.find("ASP.NET_SessionId") + 18):(set_cookies.find(';'))]
+            global SessionId
+            SessionId = set_cookies
             return set_cookies
     except KeyError:
         print("Попробуйте с включенным интернетом!")
         quit()
 
-def set_new_session_id():
-    SessionId = get_new_session_id()
-    if SessionId != "":
-        return True
-    else:
-        return False
 
 def get_cookies():
     #SessionId = SessionId
+    global SessionId
     cookies1 = {
     "_ym_d":"1746367815",
     "_ym_uid":"174636781563597601",
