@@ -57,7 +57,7 @@ def set_new_session_id():
         return False
 
 def get_cookies():
-    SessionId = SessionId
+    #SessionId = SessionId
     cookies1 = {
     "_ym_d":"1746367815",
     "_ym_uid":"174636781563597601",
