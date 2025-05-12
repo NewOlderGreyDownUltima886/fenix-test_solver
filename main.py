@@ -496,17 +496,17 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
-    print("Добро пожаловать!!! Проверяю обновления...\n")
+    print("Добро пожаловать!!! Проверяю обновления...")
     process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.PIPE, text=True, shell=True)
     process = subprocess.Popen(['git init'], stdout=subprocess.PIPE, text=True, shell=True)
     process = subprocess.Popen(['git stash'], stdout=subprocess.PIPE, text=True, shell=True)
     process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
     for line in iter(process.stdout.readline, ''):
         if "Already up to date" in line:
-            print("Обновления не найдены, у вас последняя версия!(нестабильная)\n")
+            print("\nОбновления не найдены, у вас последняя версия!(нестабильная)\n")
             break
         elif "Updating" in line:
-            print("Обновление установлено успешно, перезапусти меня!!!\n(введи \"test\")\n")
+            print("\nОбновление установлено успешно, перезапусти меня!!!\n(введи \"test\")\n")
             quit()
 
         ###############################
