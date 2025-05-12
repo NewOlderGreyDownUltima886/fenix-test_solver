@@ -1233,7 +1233,7 @@ def main():
                     num_testing += 1
                     #num_of_error = 0
                     result_solved_test.append([name_of_pred, str(name_of_test)[4:], num_non_smisl_of_test, procent_solved])
-                    if num_testing <= do_kakogo_testa_vkluchitelno:
+                    if (num_testing - do_kakogo_testa_vkluchitelno) == 1:
                         pass
                     else:
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——> Жду 10 секунд и приступаю к следующему...")
