@@ -986,6 +986,7 @@ def main():
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
                     if list_of_preds_and_tests == -1:
+                        print("Возвращаюсь...")
                         break
                     if list_of_preds_and_tests == False:
                         print("\nБудьте внимательнее! Пробуем ещё раз...")
