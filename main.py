@@ -1120,7 +1120,7 @@ def main():
                     num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
                     
                     time_start_test = datetime.datetime.now()
-                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{name_of_test}\" ({num_non_smisl_of_test})")
+                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
                     
                     select_question("1")
                     if answers_complete == False:
