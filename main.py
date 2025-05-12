@@ -1212,7 +1212,7 @@ def main():
                                         print(f"---------------> \"{procent_solved}\"")
                                         if procent_solved == "0":
                                             #значит тест не завершился еще
-                                            print(f"Внимание, с {num_of_mist}/5 тест не завершился, пробую еще раз...")
+                                            print(f"Внимание, с {num_of_mist}/5 раза тест не завершился, пробую еще раз...")
                                             close_test()
                                             return get_result(num_pred_r, name_of_test, num_of_mist=num_of_mist)
                                         else:
