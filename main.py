@@ -1191,38 +1191,39 @@ def main():
                     time.sleep(time_to_wait)
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
                     
-                    auth(silence=True)
-                    time.sleep(1)
+                    #auth(silence=True)
+                    #time.sleep(4)
+                    
+                    
                     #конец
                     close_test()
-                    time.sleep(10)
-                    close_test()
                     procent_solved = "Error" 
-                    def get_result(mist=0):
-                        mist += 1
-                        if mist <= 3:
-                            try:    
+                    
+                    def get_result(num_pred_r, name_of_test, num_of_mist=0):
+                        try:
+                            if num_of_mist <=5:
+                                num_of_mist += 1
+                                time.sleep(6)
                                 results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
-                                procent_solved = "ERROR"
                                 for j in range(len(results_array)-1): #j += 1
                                     j += 1
                                     if str(results_array[j][0].text).strip() in str(name_of_test):
                                         procent_solved = str(results_array[j][1].text).strip()
-                                        return procent_solved
-                                    print("Error123, try again") 
-                                    time.sleep(5)
-                                    auth(silence=True) 
-                                    return get_result(mist=mist)            
-                            except Exception :
-                                print("Error123, try again") 
-                                time.sleep(5)
-                                auth(silence=True) 
-                                return get_result(mist=mist) 
-                        else:
-                            return "Error" 
+                                        if "0" in procent_solved:
+                                            #значит тест не завершился еще
+                                            print(f"Внимание, с {num_of_mist}/5 тест не завершился, пробую еще раз...")
+                                            close_test()
+                                            return get_result(num_pred_r, name_of_test, num_of_mist=num_of_mist)
+                                    print("Error123, try again")
+                                    return False 
+                            else:
+                                return "Error123454575656345#"          
+                        except Exception :
+                            print("Error456, try again") 
+                            return False
                     
+                    procent_solved = get_result(num_pred_r, name_of_test)
                     
-                    procent_solved = get_result() 
                     print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>4.Тест {num_testing+1} \"{str(name_of_test)[4:]}\"")
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>завершён на {procent_solved}% (вроде {round(((30-num_of_mistakes)/30)*100, 2)}%)")
                     answers_complete = False
