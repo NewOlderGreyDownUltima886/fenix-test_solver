@@ -505,7 +505,7 @@ def main():
     process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
     for line in iter(process.stdout.readline, ''):
         if "Already up to date" in line:
-            print(line)
+            print("Обновления не найдены, у вас последняя версия!(нестабильная)")
             break
         elif "Updating" in line:
             print("Обновление установлено успешно, перезапусти меня!!!\n(введи \"test\")")
