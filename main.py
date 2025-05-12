@@ -1180,16 +1180,37 @@ def main():
                     time.sleep(time_to_wait)
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
                     
-                    #auth(silence=True)
+                    auth(silence=True)
+                    time.sleep(5)
                     #конец
                     close_test()
-                    results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
-                    procent_solved = "ERROR"
-                    for j in range(len(results_array)-1): #j += 1
-                        j += 1
-                        if str(results_array[j][0].text).strip() in str(name_of_test):
-                            procent_solved = str(results_array[j][1].text).strip()
-                            break
+                    procent_solved = "Error" 
+                    def get_result(mist=0):
+                        mist += 1
+                        if mist <= 3:
+                            try:    
+                                results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
+                                procent_solved = "ERROR"
+                                for j in range(len(results_array)-1): #j += 1
+                                    j += 1
+                                    if str(results_array[j][0].text).strip() in str(name_of_test):
+                                        procent_solved = str(results_array[j][1].text).strip()
+                                        return procent_solved
+                                    print("Error123, try again") 
+                                    time.sleep(5)
+                                    auth(silence=True) 
+                                    return get_result(mist=mist)            
+                            except Exception :
+                                print("Error123, try again") 
+                                time.sleep(5)
+                                auth(silence=True) 
+                                return get_result(mist=mist) 
+                        else:
+                            return "Error" 
+                    procent_solved = get_result() 
+
+                        
+                            
                             
                             
                             #print(f"SOVPADENIE NAIDENO: {str(results_array[j][0].text).strip()}  —>  {str(test_name_list[i].text).strip()}")
