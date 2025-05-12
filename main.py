@@ -1209,7 +1209,7 @@ def main():
                                     j += 1
                                     if str(results_array[j][0].text).strip() in str(name_of_test):
                                         procent_solved = str(results_array[j][1].text).strip()
-                                        print("---------------> \"{procent_solved}\"")
+                                        print(f"---------------> \"{procent_solved}\"")
                                         if procent_solved == "0":
                                             #значит тест не завершился еще
                                             print(f"Внимание, с {num_of_mist}/5 тест не завершился, пробую еще раз...")
@@ -1228,12 +1228,12 @@ def main():
                     procent_solved = get_result(num_pred_r, name_of_test)
                     
                     print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>4.Тест {num_testing+1} \"{str(name_of_test)[4:]}\"")
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>завершён на {procent_solved}% (вроде {round(((30-num_of_mistakes)/30)*100, 2)}%)")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>завершён на {procent_solved}% (должно быть {round(((30-num_of_mistakes)/30)*100, 2)}%)")
                     answers_complete = False
                     num_testing += 1
                     #num_of_error = 0
                     result_solved_test.append([name_of_pred, str(name_of_test)[4:], num_non_smisl_of_test, procent_solved])
-                    if num_testing < do_kakogo_testa_vkluchitelno:
+                    if num_testing <= do_kakogo_testa_vkluchitelno:
                         pass
                     else:
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——> Жду 10 секунд и приступаю к следующему...")
