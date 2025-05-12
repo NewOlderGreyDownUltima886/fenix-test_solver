@@ -227,8 +227,8 @@ def chose_some_test_from_list():
     except ValueError:
         print("hui1")
         return False
-    if num_of_pred == "0":
-        return "0"
+    if num_of_pred == -1:
+        return -1
     if (num_of_pred > (len(pred_list)-1)) or (num_of_pred < 0):
         print("hui2")
         return False
@@ -288,8 +288,8 @@ def chose_some_test_from_list():
     print("\t0. Вернуться")
     try:
         num_of_test = int(user_input("\nC какого теста начать (по счёту): ")) - 1
-        if num_of_test == "0":
-            return "0"
+        if num_of_test == -1:
+            return -1
         if (num_of_test > (len(test_name_list)-1)) or (num_of_test < 0):
             print("hui3")
             return False
@@ -985,7 +985,7 @@ def main():
                 #допытываем от пользователя номер предмета и тесты
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
-                    if list_of_preds_and_tests == "0":
+                    if list_of_preds_and_tests == -1:
                         break
                     if list_of_preds_and_tests == False:
                         print("\nБудьте внимательнее! Пробуем ещё раз...")
