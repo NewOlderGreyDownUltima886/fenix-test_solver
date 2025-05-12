@@ -992,7 +992,6 @@ def main():
                     continue
                 
                 if list_of_preds_and_tests == -1:
-                    print("Возвращаюсь...")
                     ask_to_return = True
                     break
                 if list_of_preds_and_tests == False:
@@ -1029,6 +1028,7 @@ def main():
                 else: print("Хорошо, пробуем ещё раз...")
 
             if ask_to_return == True:
+                print("Возвращаюсь...")
                 break
 
             #несколько нужных переменных
