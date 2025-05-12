@@ -980,20 +980,24 @@ def main():
                 else:
                     print("У вас еще всё более чем отлично!, попробуйте кого-нибудь другого исправить...")
         if auth_bool == True:
+            ask_to_return = False
             while True:
 
                 #допытываем от пользователя номер предмета и тесты
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
-                    if list_of_preds_and_tests == -1:
-                        print("Возвращаюсь...")
-                        break
-                    if list_of_preds_and_tests == False:
-                        print("\nБудьте внимательнее! Пробуем ещё раз...")
-                        continue
                 except ValueError:
                     print("\nБудьте внимательнее! Пробуем ещё раз...")
                     continue
+                
+                if list_of_preds_and_tests == -1:
+                    print("Возвращаюсь...")
+                    ask_to_return = True
+                    break
+                if list_of_preds_and_tests == False:
+                    print("\nБудьте внимательнее! Пробуем ещё раз...")
+                    continue
+                
                 try:
                     num_pred_r = list_of_preds_and_tests[0]
                     num_testing_r = list_of_preds_and_tests[1]
@@ -1022,6 +1026,9 @@ def main():
                 elif ("н" in a): break
                 elif ("Н" in a): break
                 else: print("Хорошо, пробуем ещё раз...")
+
+            if ask_to_return == True:
+                break
 
             #несколько нужных переменных
             answers_complete = False
