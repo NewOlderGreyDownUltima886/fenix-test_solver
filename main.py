@@ -1,6 +1,6 @@
 #Добро пожаловать в исходный код!
 #Любознательность - наше всё!!!
-#123
+
 #1. возвращен requests (+)
 #2. есть проверка на ошибки, но не весь пользовательский ввод проверяется достаточно
 #3. есть гит (+)
@@ -9,7 +9,7 @@
 #6. нет защиты от временного дисконекта (+)
 #7. дима пошел нахер (+++)
 
-import os
+import os, subprocess
 import requests
 import time, random, datetime, timedelta, string
 from bs4 import BeautifulSoup
@@ -36,6 +36,7 @@ def user_input(str1):
     else:
         return res
 
+SessionId=""
 
 def get_new_session_id():
     a = requests.get("http://eport.fesmu.ru/eport/eport/Default.aspx", headers=headers1)
@@ -48,19 +49,23 @@ def get_new_session_id():
         print("Попробуйте с включенным интернетом!")
         quit()
 
-SessionId=""
+def set_new_session_id():
+    SessionId = get_new_session_id()
+    if SessionId != "":
+        return True
+    else:
+        return False
 
-
-
-
-cookies1 = {
+def get_cookies():
+    SessionId = SessionId
+    cookies1 = {
     "_ym_d":"1746367815",
     "_ym_uid":"174636781563597601",
     "_ym_isad":"2",
     "_ym_visorc":"w",
     "ASP.NET_SessionId":SessionId,
 }
-
+    return cookies1
 
 
 
@@ -70,9 +75,9 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
     num_of_error=num_of_error
     try:
         if get_request == True:
-            a = requests.get(url, headers=headers1, cookies=cookies1, stream=streaming)            #ДЛя GET-запросов
+            a = requests.get(url, headers=headers1, cookies=get_cookies(), stream=streaming)            #ДЛя GET-запросов
         else:           
-            a = requests.post(url, data=data, headers=headers1, cookies=cookies1, stream=streaming) #Для POST-запросов
+            a = requests.post(url, data=data, headers=headers1, cookies=get_cookies(), stream=streaming) #Для POST-запросов
     except Exception as E:
         print(f'''\n----------------------------ERROR-------------------------------------------''')
         for x in range(len(gay_words)):
@@ -157,33 +162,37 @@ def get_pass():
 #POST /eport/eport/Default.aspx
 # возвращает тру\фолс
 def auth(login1="", password1="", silence=False):
-    if (login1 == "") and (password1 == ""):
-        login1 = get_login()
-        password1 = get_pass()
-        if (login1 == False) or (password1 == False):
-            print("ERROR, НЕ СУЩЕСТВУЕТ ФАЙЛА С ЛОГИНОМ И ПАРОЛЕМ!!!\n—————>Выхожу...")
-            quit()
-    else:
-        print(f"Пробую зайти в аккаунт {login1}:{password1}...\n")
-    data_auth = f"ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM5Mjc2OTQzMQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIFDw8WAh4EVGV4dAXQAtCX0LAg0YHRg9GC0LrQuCDRg9C90LjQutCw0LvRjNC90YvRhSDQsNCy0YLQvtGA0LjQt9C40YDQvtCy0LDQvdC90YvRhSDQv9C%2B0LvRjNC30L7QstCw0YLQtdC70LXQuSDQvdCwINC%2F0L7RgNGC0LDQu9C1OiA3NzAgIDxiciAvPtCh0YDQtdC00L3QtdC1INCy0YDQtdC80Y8g0LLRi9C%2F0L7Qu9C90LXQvdC40Y8gMSDQt9Cw0LTQsNC90LjRjyDQv9C%2B0YHQu9C10LTQvdC40YUgNTAg0YDQtdC30YPQu9GM0YLQsNGC0LjQstC90YvRhSDRgtC10YHRgtC%2B0LIgMTQg0YHQtdC60YPQvdC0PGJyLyA%2B0KHQtdC50YfQsNGBINC%2F0L7QtNC60LvRjtGH0LXQvdC40Lkg0Log0L%2FQvtGA0YLQsNC70YM6IDYzMWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMWYnd7fFZyValq0x%2B30B7kDIWqfTBgE1HUa5%2Fne5VLQz&__VIEWSTATEGENERATOR=73D4C735&__EVENTVALIDATION=%2FwEdAANykW%2Fz6ZjgBrPJhiB0FU0SUN0eEH6RAZcaSKVdt8S4X7osef1mutGT26WuFCdWwFZsovP8KXv0BZyweEkBDqJpWQ1Mw3YxYEw8xGAX44%2FbtA%3D%3D&ctl00%24MainContent%24UserText={login1}&ctl00%24MainContent%24PassText={password1}&ctl00%24MainContent%24ASPxButton1=&DXScript=1_42%2C1_75%2C2_27"
-    
-    #print(data_auth)
-    #data_auth = data_auth.encode('utf-8')
-    requst1 = make_a_request("http://eport.fesmu.ru/eport/eport/Default.aspx", data_auth, auth=True)#, start=True)
-    soup = BeautifulSoup(requst1.text, 'html.parser')
-    b = soup.select('span[id="ctl00_MainContent_Label1"]')
-    if len(b) > 0:
-        if "Здравствуйте" in b[0].text:
-            #print("\n---------------------------------------------------------------")
-            if silence == False:
-                print(f'\n{str(b[0].text)[:-33]}!')
-            return True
+    if set_new_session_id():
+        print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
+        if (login1 == "") and (password1 == ""):
+            login1 = get_login()
+            password1 = get_pass()
+            if (login1 == False) or (password1 == False):
+                print("ERROR, НЕ СУЩЕСТВУЕТ ФАЙЛА С ЛОГИНОМ И ПАРОЛЕМ!!!\n—————>Выхожу...")
+                quit()
         else:
-            print(f"ERROR AUTH (1) < error: {b}")
-            return False
-    print("Ошибка, не получилось войти в аккаунт, попробуйте еще раз!!!")
-    return False
-
+            print(f"Пробую зайти в аккаунт {login1}:{password1}...\n")
+        data_auth = f"ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM5Mjc2OTQzMQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIFDw8WAh4EVGV4dAXQAtCX0LAg0YHRg9GC0LrQuCDRg9C90LjQutCw0LvRjNC90YvRhSDQsNCy0YLQvtGA0LjQt9C40YDQvtCy0LDQvdC90YvRhSDQv9C%2B0LvRjNC30L7QstCw0YLQtdC70LXQuSDQvdCwINC%2F0L7RgNGC0LDQu9C1OiA3NzAgIDxiciAvPtCh0YDQtdC00L3QtdC1INCy0YDQtdC80Y8g0LLRi9C%2F0L7Qu9C90LXQvdC40Y8gMSDQt9Cw0LTQsNC90LjRjyDQv9C%2B0YHQu9C10LTQvdC40YUgNTAg0YDQtdC30YPQu9GM0YLQsNGC0LjQstC90YvRhSDRgtC10YHRgtC%2B0LIgMTQg0YHQtdC60YPQvdC0PGJyLyA%2B0KHQtdC50YfQsNGBINC%2F0L7QtNC60LvRjtGH0LXQvdC40Lkg0Log0L%2FQvtGA0YLQsNC70YM6IDYzMWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMWYnd7fFZyValq0x%2B30B7kDIWqfTBgE1HUa5%2Fne5VLQz&__VIEWSTATEGENERATOR=73D4C735&__EVENTVALIDATION=%2FwEdAANykW%2Fz6ZjgBrPJhiB0FU0SUN0eEH6RAZcaSKVdt8S4X7osef1mutGT26WuFCdWwFZsovP8KXv0BZyweEkBDqJpWQ1Mw3YxYEw8xGAX44%2FbtA%3D%3D&ctl00%24MainContent%24UserText={login1}&ctl00%24MainContent%24PassText={password1}&ctl00%24MainContent%24ASPxButton1=&DXScript=1_42%2C1_75%2C2_27"
+        
+        #print(data_auth)
+        #data_auth = data_auth.encode('utf-8')
+        requst1 = make_a_request("http://eport.fesmu.ru/eport/eport/Default.aspx", data_auth, auth=True)#, start=True)
+        soup = BeautifulSoup(requst1.text, 'html.parser')
+        b = soup.select('span[id="ctl00_MainContent_Label1"]')
+        if len(b) > 0:
+            if "Здравствуйте" in b[0].text:
+                #print("\n---------------------------------------------------------------")
+                if silence == False:
+                    print(f'\n{str(b[0].text)[:-33]}!')
+                return True
+            else:
+                print(f"ERROR AUTH (1) < error: {b}")
+                return False
+        print("Ошибка, не получилось войти в аккаунт, попробуйте еще раз!!!")
+        return False
+    else:
+        print("Проверьте подключение к интернету")
+        quit()
 #Войти в тест с известным num_pred и num_test
 #POST /eport/eport/studtst1.aspx HTTP/1.1
 def enter_current_test(num_of_pred=0, num_of_test=0):
@@ -487,24 +496,36 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
-    print("Добро пожаловать!!! ")
+    print("Добро пожаловать!!! Проверяю обновления...\n")
+            #проверка на апдейт и установка
+    os.system('cd ~/fenix-test_solver')
+    os.system('git init')
+    os.system('git stash')
+
+    process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
+    for line in iter(process.stdout.readline, ''):
+        if "Already up to date" in line:
+            print(line)
+            break
+        elif "Updating" in line:
+            print("Обновление установлено успешно, перезапусти меня!!!\n(введи \"test\")")
+            quit()
+
+        ###############################
     
     while True:
+
         print("""
 Выберите действие:
 1. Решить тесты
 2. Изменить данные аккаунта
 3. Изменить параметы (эксперементально)
-8. Проверить обновление и обновиться при наличии
 9. Очистить экран
 0. Выйти
 """)
         chose = input("Действие: ")
         if chose == "1":
             if get_login() and get_pass():
-                SessionId=get_new_session_id()  #len = 24
-                cookies1["ASP.NET_SessionId"] = SessionId
-                print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
                 if auth():
                     auth_bool = True
                 else:
@@ -515,9 +536,6 @@ def main():
                 passw = input("Пароль: ")
                 set_login_pass(login1=quote(login), pass1=quote(passw))
                 print("Спасибо! Записал в файл...")
-                SessionId=get_new_session_id()  #len = 24
-                cookies1["ASP.NET_SessionId"] = SessionId
-                print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
                 if auth():
                     auth_bool = True
                 else:
@@ -530,14 +548,6 @@ def main():
             set_login_pass(login1=quote(login), pass1=quote(passw))
             print("Спасибо! Записал в файл...")
             continue
-        elif chose == "8":
-            os.system('cd ~/fenix-test_solver')
-            os.system('git init')
-            os.system('git stash')
-            os.system('git pull')
-            print("\nПерезапусти меня!")
-            quit()
-        
         elif chose == "9":
             os.system('cls')
         elif chose == "0":
@@ -1248,4 +1258,3 @@ def main():
 
 # дима лох
 main()
-
