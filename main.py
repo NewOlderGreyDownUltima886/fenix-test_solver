@@ -163,7 +163,8 @@ def get_pass():
 # возвращает тру\фолс
 def auth(login1="", password1="", silence=False):
     if set_new_session_id():
-        print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
+        if silence == False:
+            print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
         if (login1 == "") and (password1 == ""):
             login1 = get_login()
             password1 = get_pass()
@@ -193,6 +194,9 @@ def auth(login1="", password1="", silence=False):
     else:
         print("Проверьте подключение к интернету")
         quit()
+
+
+
 #Войти в тест с известным num_pred и num_test
 #POST /eport/eport/studtst1.aspx HTTP/1.1
 def enter_current_test(num_of_pred=0, num_of_test=0):
@@ -1152,7 +1156,7 @@ def main():
                             time.sleep(1)
                             new_list = check_some_case_and_next(var1)
                             
-                            print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Вопрос {i+1}{space}: {new_list}")
+                            print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Вопрос {i+1}{space}: {new_list}")
                             time.sleep(0.250)
 
                         #Завершение
@@ -1188,8 +1192,10 @@ def main():
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
                     
                     auth(silence=True)
-                    time.sleep(5)
+                    time.sleep(1)
                     #конец
+                    close_test()
+                    time.sleep(10)
                     close_test()
                     procent_solved = "Error" 
                     def get_result(mist=0):
