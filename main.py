@@ -496,12 +496,10 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
-    print("Добро пожаловать!!! Проверяю обновления...")
-            #проверка на апдейт и установка
-    os.system('cd ~/fenix-test_solver')
-    os.system('git init')
-    os.system('git stash')
-
+    print("Добро пожаловать!!! Проверяю обновления...\n")
+    process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.PIPE, text=True, shell=True)
+    process = subprocess.Popen(['git init'], stdout=subprocess.PIPE, text=True, shell=True)
+    process = subprocess.Popen(['git stash'], stdout=subprocess.PIPE, text=True, shell=True)
     process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
     for line in iter(process.stdout.readline, ''):
         if "Already up to date" in line:
