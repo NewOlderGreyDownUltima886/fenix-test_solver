@@ -1028,7 +1028,7 @@ def main():
                 else: print("Хорошо, пробуем ещё раз...")
 
             if ask_to_return == True:
-                break
+                continue
 
             #несколько нужных переменных
             answers_complete = False
