@@ -1068,8 +1068,7 @@ def main():
                 for i in range(len(b2)): 
                     if "Просмотр ответов заданий возможен только при выполнении не менее 70% теста" in b2[i].text:
                         print(f'\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"Просмотр ответов заданий возможен только при выполнении не менее 70%", тест {num_testing+1} по предмету \"{name_pred_r}\", завершаю его!')
-                        if (num_testing+1) <= do_kakogo_testa_vkluchitelno: 
-                            print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую еще раз решить тест {num_testing+1}...')
+                        print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую еще раз решить тест {num_testing+1}...')
                         answers_complete = False                       
                         proverka = True
                         close_test_70_error()
@@ -1118,14 +1117,13 @@ def main():
 
                     c = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
                     num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
-                    
-                    time_start_test = datetime.datetime.now()
+
                     print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
                     
-                    select_question("1")
                     if answers_complete == False:
                         print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>1.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
                         time_before = datetime.datetime.now()
+                        select_question("1")
                         for i in range(30):
                             check_first_and_next()
                             time.sleep(1)
@@ -1161,14 +1159,14 @@ def main():
 
                         #Завершение
                         if crytical_error == True:
-                            print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>!!! КРИТИЧЕСКАЯ ОШИБКА ВЫПОЛНЕНИЯ ТЕСТА, ЗАШЛИ НА ПЯТЕРКУ РАНЬШЕ ЧЕМ РЕШИЛИ ТЕСТ, ЭКСТРЕННО ЗАВЕРШАЮ ЕГО...\n")
-                            answers_complete = False
-                            num_testing += 1
-                            errored_solved_test += 1
-                            break
+                            print(f'\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"!!! КРИТИЧЕСКАЯ ОШИБКА ВЫПОЛНЕНИЯ ТЕСТА, ЗАШЛИ НА ПЯТЕРКУ РАНЬШЕ ЧЕМ РЕШИЛИ ТЕСТ')
+                            print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую еще раз решить тест {num_testing+1}...')
+                            answers_complete = False                       
+                            continue
 
                         print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВСЕ ОТВЕТЫ УСПЕШНО ЗАПИСАНЫ")        
                         answers_complete=True
+    
                     else:
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВНИМАНИЕ, ТЕСТ УЖЕ ПРОРЕШАН, НЕ ПРОРЕШИВАЮ ЕГО ЕЩЕ РАЗ!!!")
 
@@ -1209,7 +1207,7 @@ def main():
                                     j += 1
                                     if str(results_array[j][0].text).strip() in str(name_of_test):
                                         procent_solved = str(results_array[j][1].text).strip()
-                                        print(f"---------------> \"{procent_solved}\"")
+                                        #print(f"---------------> \"{procent_solved}\"")
                                         if procent_solved == "0":
                                             #значит тест не завершился еще
                                             print(f"Внимание, с {num_of_mist}/5 раза тест не завершился, пробую еще раз...")
