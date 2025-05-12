@@ -1209,11 +1209,14 @@ def main():
                                     j += 1
                                     if str(results_array[j][0].text).strip() in str(name_of_test):
                                         procent_solved = str(results_array[j][1].text).strip()
-                                        if "0" in procent_solved:
+                                        print("---------------> \"{procent_solved}\"")
+                                        if procent_solved == "0":
                                             #значит тест не завершился еще
                                             print(f"Внимание, с {num_of_mist}/5 тест не завершился, пробую еще раз...")
                                             close_test()
                                             return get_result(num_pred_r, name_of_test, num_of_mist=num_of_mist)
+                                        else:
+                                            return procent_solved
                                     print("Error123, try again")
                                     return False 
                             else:
