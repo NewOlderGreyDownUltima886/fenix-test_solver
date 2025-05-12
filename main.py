@@ -67,7 +67,6 @@ def get_cookies():
 
 
 
-gay_words = ['timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
 def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth=False, get_request=False):
     num_of_error=num_of_error
     try:
@@ -77,6 +76,7 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
             a = requests.post(url, data=data, headers=headers1, cookies=get_cookies(), stream=streaming) #Для POST-запросов
     except Exception as E:
         print(f'''\n----------------------------ERROR-------------------------------------------''')
+        gay_words = ['timed out', 'HTTPConnectionPool', 'Max retries', 'resolve', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
         for x in range(len(gay_words)):
             if str(gay_words[x]) in str(E):
                 num_of_error += 1
