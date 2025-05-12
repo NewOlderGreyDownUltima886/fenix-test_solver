@@ -1,6 +1,6 @@
 #Добро пожаловать в исходный код!
 #Любознательность - наше всё!!!
-#123456
+#123
 #1. возвращен requests (+)
 #2. есть проверка на ошибки, но не весь пользовательский ввод проверяется достаточно
 #3. есть гит (+)
@@ -73,7 +73,7 @@ def get_cookies():
 gay_words = ['timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
 def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth=False, get_request=False):
     num_of_error=num_of_error
-    try:
+    """try:
         if get_request == True:
             a = requests.get(url, headers=headers1, cookies=get_cookies(), stream=streaming)            #ДЛя GET-запросов
         else:           
@@ -92,8 +92,11 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                     print(f"НЕ ПОЛУЧАЕТСЯ АВТОРИЗОВАТЬСЯ, проверьте подключение к интернету!!!\n—————>Выхожу...")
                     quit()  #return False
         print(f"НЕИЗВЕСТНАЯ ФАТАЛЬНАЯ ОШИБКА, \nописание: {E}\n—————>Выхожу...")
-        quit() #return False
-
+        quit() #return False"""
+    if get_request == True:
+        a = requests.get(url, headers=headers1, cookies=get_cookies(), stream=streaming)            #ДЛя GET-запросов
+    else:           
+        a = requests.post(url, data=data, headers=headers1, cookies=get_cookies(), stream=streaming) #Для POST-запросов
 
     def test_na_diskonekt_izza_istekshey_sessii(a):
         soup = BeautifulSoup(a.text, 'html.parser')
