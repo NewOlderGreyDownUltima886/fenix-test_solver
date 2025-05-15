@@ -51,7 +51,7 @@ def get_cookies():
 
 #Главная функция аутентификации
 gay_words = prikoli.gay_words
-def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth=False, get_request=False):
+def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth_mode=False, get_request=False):
     num_of_error=num_of_error
     try:
         if get_request == True:
@@ -82,15 +82,33 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
         
         b1 = soup.select('h1[id="ctl00_MainContent_Label1"]')
         for i in range(len(b1)):
-            if "На портале могут работать только зарегистрированные пользователи" in b1[i].text:
-                print("!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ")
+            if "могут работать только зарегистрированные пользователи" in b1[i].text:
+                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {b1[i].text}")
                 return False
             
         b2 = soup.select('script[type="text/javascript"]')
         for i in range(len(b2)):
             if "необходима авторизация" in b2[i].text:
-                print("!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ")
+                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {b2[i].text}")
                 return False
+        
+        b3 = soup.select('title')
+        for i, item in enumerate(b3):
+            if "Невозможно" in item.text:
+                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {item.text}")
+                return False
+
+        b4 = soup.select('h1')
+        for i, item in enumerate(b4):
+            if "Ошибка сервера" in item.text:
+                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {item.text}")
+                return False
+
+        if "Эта страница ошибки может содержать важные данные, так как ASP.NET настроено на показ подробных сообщений об ошибках с помощью" in str(a):
+            print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: КОММЕНТАРИЙ")
+            return False
+        
+        print("тест на дисконект прошел успешно, ошибки не отловлены")
         return True
 
     if test_na_diskonekt_izza_istekshey_sessii(a):
@@ -102,21 +120,18 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
         return a
     else:
         print(f'''\n----------------------------ERROR-------------------------------------------''')
-        if auth == True:
+        if auth_mode == True:
             print("Error, неправильный логин или пароль!!!\n—————>Выхожу...")
-            quit() #return False
+            quit()
         else:
-            #print(f"НУЖНА АВТОРИЗАЦИЯ ДЛЯ ДЛЯ РАБОТЫ ПО ССЫЛКЕ: {url}!!! Пробую перезайти в аккаунт и продолжить работу...\n")
-            #if auth():
-            #    make_a_request(url, data, silens, streaming)
-            #else: 
             num_of_error+=1
             num_of_error_vsego = 10
             if num_of_error <= num_of_error_vsego:
                 print(f"\nСДОХЛА СЕССИЯ {get_login()}:{get_pass()}!!! Пробую ещё раз через 10 секунд ({num_of_error}/{num_of_error_vsego})")
                 time.sleep(10)
-                auth(silence=True) 
-                return make_a_request(url, data, silens, streaming, num_of_error=num_of_error)
+                preres = auth(silence=True)
+                print(f'Try to reauth: {preres}') 
+                return make_a_request(url, data, silens=silens, streaming=streaming, num_of_error=num_of_error, auth_mode=auth_mode, get_request=get_request)
             else:
                 print("Не получается авторизоваться, проверьте подключение к интернету!!!\n—————>Выхожу...")
                 quit() #return False
@@ -157,8 +172,7 @@ def get_pass():
 # возвращает тру\фолс
 def auth(login1="", password1="", silence=False):
     if set_new_session_id():
-        if silence == False:
-            print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
+        if silence == False: print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
         if (login1 == "") and (password1 == ""):
             login1 = get_login()
             password1 = get_pass()
@@ -167,12 +181,11 @@ def auth(login1="", password1="", silence=False):
                 quit()
         else:
             print(f"Пробую зайти в аккаунт {login1}:{password1}...\n")
-        data_auth = f"ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM5Mjc2OTQzMQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIFDw8WAh4EVGV4dAXQAtCX0LAg0YHRg9GC0LrQuCDRg9C90LjQutCw0LvRjNC90YvRhSDQsNCy0YLQvtGA0LjQt9C40YDQvtCy0LDQvdC90YvRhSDQv9C%2B0LvRjNC30L7QstCw0YLQtdC70LXQuSDQvdCwINC%2F0L7RgNGC0LDQu9C1OiA3NzAgIDxiciAvPtCh0YDQtdC00L3QtdC1INCy0YDQtdC80Y8g0LLRi9C%2F0L7Qu9C90LXQvdC40Y8gMSDQt9Cw0LTQsNC90LjRjyDQv9C%2B0YHQu9C10LTQvdC40YUgNTAg0YDQtdC30YPQu9GM0YLQsNGC0LjQstC90YvRhSDRgtC10YHRgtC%2B0LIgMTQg0YHQtdC60YPQvdC0PGJyLyA%2B0KHQtdC50YfQsNGBINC%2F0L7QtNC60LvRjtGH0LXQvdC40Lkg0Log0L%2FQvtGA0YLQsNC70YM6IDYzMWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMWYnd7fFZyValq0x%2B30B7kDIWqfTBgE1HUa5%2Fne5VLQz&__VIEWSTATEGENERATOR=73D4C735&__EVENTVALIDATION=%2FwEdAANykW%2Fz6ZjgBrPJhiB0FU0SUN0eEH6RAZcaSKVdt8S4X7osef1mutGT26WuFCdWwFZsovP8KXv0BZyweEkBDqJpWQ1Mw3YxYEw8xGAX44%2FbtA%3D%3D&ctl00%24MainContent%24UserText={login1}&ctl00%24MainContent%24PassText={password1}&ctl00%24MainContent%24ASPxButton1=&DXScript=1_42%2C1_75%2C2_27"
         
-        #print(data_auth)
-        #data_auth = data_auth.encode('utf-8')
-        requst1 = make_a_request("http://eport.fesmu.ru/eport/eport/Default.aspx", data_auth, auth=True)#, start=True)
+        data_auth = f"ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTM5Mjc2OTQzMQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIFDw8WAh4EVGV4dAXQAtCX0LAg0YHRg9GC0LrQuCDRg9C90LjQutCw0LvRjNC90YvRhSDQsNCy0YLQvtGA0LjQt9C40YDQvtCy0LDQvdC90YvRhSDQv9C%2B0LvRjNC30L7QstCw0YLQtdC70LXQuSDQvdCwINC%2F0L7RgNGC0LDQu9C1OiA3NzAgIDxiciAvPtCh0YDQtdC00L3QtdC1INCy0YDQtdC80Y8g0LLRi9C%2F0L7Qu9C90LXQvdC40Y8gMSDQt9Cw0LTQsNC90LjRjyDQv9C%2B0YHQu9C10LTQvdC40YUgNTAg0YDQtdC30YPQu9GM0YLQsNGC0LjQstC90YvRhSDRgtC10YHRgtC%2B0LIgMTQg0YHQtdC60YPQvdC0PGJyLyA%2B0KHQtdC50YfQsNGBINC%2F0L7QtNC60LvRjtGH0LXQvdC40Lkg0Log0L%2FQvtGA0YLQsNC70YM6IDYzMWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMWYnd7fFZyValq0x%2B30B7kDIWqfTBgE1HUa5%2Fne5VLQz&__VIEWSTATEGENERATOR=73D4C735&__EVENTVALIDATION=%2FwEdAANykW%2Fz6ZjgBrPJhiB0FU0SUN0eEH6RAZcaSKVdt8S4X7osef1mutGT26WuFCdWwFZsovP8KXv0BZyweEkBDqJpWQ1Mw3YxYEw8xGAX44%2FbtA%3D%3D&ctl00%24MainContent%24UserText={login1}&ctl00%24MainContent%24PassText={password1}&ctl00%24MainContent%24ASPxButton1=&DXScript=1_42%2C1_75%2C2_27"
+        requst1 = make_a_request("http://eport.fesmu.ru/eport/eport/Default.aspx", data_auth, auth_mode=True)#, start=True)
         soup = BeautifulSoup(requst1.text, 'html.parser')
+        
         b = soup.select('span[id="ctl00_MainContent_Label1"]')
         if len(b) > 0:
             if "Здравствуйте" in b[0].text:
@@ -811,7 +824,7 @@ def main():
                         crytical_error = answer_all_questions()
 
 
-                        #Завершение
+                        #если зашли на пятерку раньше чем прорешали вопрос
                         if crytical_error == True:
                             print(f'\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"!!! КРИТИЧЕСКАЯ ОШИБКА ВЫПОЛНЕНИЯ ТЕСТА, ЗАШЛИ НА ПЯТЕРКУ РАНЬШЕ ЧЕМ РЕШИЛИ ТЕСТ')
                             print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую еще раз решить тест {num_testing+1}...')
