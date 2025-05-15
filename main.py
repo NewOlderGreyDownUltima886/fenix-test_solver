@@ -1,6 +1,6 @@
 #Добро пожаловать в исходный код!
 #Любознательность - наше всё!!!
-#123
+
 #1. возвращен requests (+)
 #2. есть проверка на ошибки, но не весь пользовательский ввод проверяется достаточно
 #3. есть гит (+)
@@ -14,46 +14,30 @@ import requests
 import time, random, datetime, timedelta, string
 from bs4 import BeautifulSoup
 from urllib.parse import quote
+import prikoli
 
-headers1 = {
-"Host": "eport.fesmu.ru",
-"Cache-Control": "max-age=0",
-"Origin": "http://eport.fesmu.ru",
-"Content-Type": "application/x-www-form-urlencoded",
-"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-"Upgrade-Insecure-Requests": "1",
-#"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0",
-"User-Agent" : "Mozilla/5.0 (X11; Linux i686; rv:128.0) Gecko/20100101 Firefox/128.0",
-"Accept-Encoding": "gzip, deflate, br",
-"Connection": "keep-alive",
-}
 
-def user_input(str1):
-    res = input(str1)
-    if res == "admin":
-        admin()
-        return False
-    else:
-        return res
-
+#Функции для работы с сессией
+headers1 = prikoli.headers1
 SessionId=""
-
-def set_new_session_id():
+def get_new_session_id():
     a = requests.get("http://eport.fesmu.ru/eport/eport/Default.aspx", headers=headers1)
     try:
         set_cookies = str(a.headers["Set-Cookie"]).strip()
         if "ASP.NET_SessionId" in set_cookies:
             set_cookies = set_cookies[(set_cookies.find("ASP.NET_SessionId") + 18):(set_cookies.find(';'))]
-            global SessionId
-            SessionId = set_cookies
             return set_cookies
     except KeyError:
         print("Попробуйте с включенным интернетом!")
         quit()
-
-
+def set_new_session_id():
+    global SessionId
+    SessionId = get_new_session_id()
+    if SessionId != "":
+        return True
+    else:
+        return False
 def get_cookies():
-    #SessionId = SessionId
     global SessionId
     cookies1 = {
     "_ym_d":"1746367815",
@@ -65,18 +49,19 @@ def get_cookies():
     return cookies1
 
 
-
-
+#Главная функция аутентификации
+gay_words = prikoli.gay_words
 def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth=False, get_request=False):
     num_of_error=num_of_error
     try:
         if get_request == True:
+            time.sleep(1)
             a = requests.get(url, headers=headers1, cookies=get_cookies(), stream=streaming)            #ДЛя GET-запросов
-        else:           
+        else:
+            time.sleep(1)       
             a = requests.post(url, data=data, headers=headers1, cookies=get_cookies(), stream=streaming) #Для POST-запросов
     except Exception as E:
         print(f'''\n----------------------------ERROR-------------------------------------------''')
-        gay_words = ['timed out', 'HTTPConnectionPool', 'Max retries', 'resolve', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
         for x in range(len(gay_words)):
             if str(gay_words[x]) in str(E):
                 num_of_error += 1
@@ -90,6 +75,7 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                     quit()  #return False
         print(f"НЕИЗВЕСТНАЯ ФАТАЛЬНАЯ ОШИБКА, \nописание: {E}\n—————>Выхожу...")
         quit() #return False
+
 
     def test_na_diskonekt_izza_istekshey_sessii(a):
         soup = BeautifulSoup(a.text, 'html.parser')
@@ -136,12 +122,18 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                 quit() #return False
 
 
-
+#Парочка функций для работы с файлами и выводом
+def user_input(str1):
+    res = input(str1)
+    if res == "admin":
+        admin()
+        return False
+    else:
+        return res
 def set_login_pass(login1, pass1):
     with open("pass_file", "w+") as file:
         file.write(f"{login1}\n{pass1}")
     return True 
-
 def get_login():
     try:
         with open("pass_file", "r") as file:
@@ -158,13 +150,14 @@ def get_pass():
         return False
 
 
+
+
 #Авторизация
 #POST /eport/eport/Default.aspx
 # возвращает тру\фолс
 def auth(login1="", password1="", silence=False):
     if set_new_session_id():
-        if silence == False:
-            print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
+        print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
         if (login1 == "") and (password1 == ""):
             login1 = get_login()
             password1 = get_pass()
@@ -195,8 +188,6 @@ def auth(login1="", password1="", silence=False):
         print("Проверьте подключение к интернету")
         quit()
 
-
-
 #Войти в тест с известным num_pred и num_test
 #POST /eport/eport/studtst1.aspx HTTP/1.1
 def enter_current_test(num_of_pred=0, num_of_test=0):
@@ -225,7 +216,7 @@ def chose_some_test_from_list():
         space = ""
         if i < 9: space += " "
         print(f"\t{num}.{space} {pred_list[i].text}") 
-    print("\t0. Вернуться") 
+    print("\t0. Вернуться в меню") 
     try:
         num_of_pred = int(user_input("\nВыберите предмет из списка: ")) - 1
     except ValueError:
@@ -289,7 +280,7 @@ def chose_some_test_from_list():
         #формируем процент выполненности или невыполненности:
         print(f"\t{num}.{space} ({persent}) {num_test} | {name_test}")
     
-    print("\t0. Вернуться")
+    print("\t0. Вернуться в меню")
     try:
         num_of_test = int(user_input("\nC какого теста начать (по счёту): ")) - 1
         if num_of_test == -1:
@@ -318,14 +309,14 @@ def chose_some_test_from_list():
 #POST /eport/eport/studtst2.aspx HTTP/1.1
 def select_question(num_of_question="1"):
     data_select_question=f"ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTUwNzg4NDI2OQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIDD2QWQgIBDzwrAAQBAA8WAh4FVmFsdWUFUygyKSDQo9GF0L7QtCDQt9CwINCx0L7Qu9GM0L3Ri9C80Lgg0LIg0L%2FQtdGA0LjQvtC%2F0LXRgNCw0YLQuNCy0L3QvtC8INC%2F0LXRgNC40L7QtNC1ZGQCCQ88KwAEAQAPFgIfAAUr0JjQtNC10L3RgtC40YTQuNC60LDRgtC%2B0YAg0YLQtdGB0YLQsCAxMzczNWRkAgsPFCsABA8WAh8ABSvQktCw0Ygg0LvQuNC80LjRgiDQstGA0LXQvNC10L3QuCAxOCDQvNC40L0uZDwrAAwBABYEHglGb3JlQ29sb3IKTx4EXyFTQgIEZGRkAg8PFCsABmRkZGQ8KwAHAQAWBB4LQ3NzRmlsZVBhdGgFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHgpDc3NQb3N0Zml4BQRBcXVhPCsABgEAFgIeEVNwcml0ZUNzc0ZpbGVQYXRoBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAhEPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAITDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCFQ8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAhcPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAIZDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCGw8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAh0PFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAIfDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCIQ8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAiMPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAIlDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCJw8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAikPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAIrDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCLQ8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAi8PFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAIxDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCMw8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAjUPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAI3DxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCOQ8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAjsPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAI9DxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCPw8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAkEPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAJDDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQCRQ8UKwAGZGRkZDwrAAcBABYEHwMFIH4vQXBwX1RoZW1lcy9BcXVhL3swfS9zdHlsZXMuY3NzHwQFBEFxdWE8KwAGAQAWAh8FBSF%2BL0FwcF9UaGVtZXMvQXF1YS9BU1B4QnV0dG9uLnNraW5kAkcPFCsABmRkZGQ8KwAHAQAWBB8DBSB%2BL0FwcF9UaGVtZXMvQXF1YS97MH0vc3R5bGVzLmNzcx8EBQRBcXVhPCsABgEAFgIfBQUhfi9BcHBfVGhlbWVzL0FxdWEvQVNQeEJ1dHRvbi5za2luZAJJDxQrAAZkZGRkPCsABwEAFgQfAwUgfi9BcHBfVGhlbWVzL0FxdWEvezB9L3N0eWxlcy5jc3MfBAUEQXF1YTwrAAYBABYCHwUFIX4vQXBwX1RoZW1lcy9BcXVhL0FTUHhCdXR0b24uc2tpbmQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFiEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24wNAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjAyBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMDMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uOAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjkFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTIFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE0BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTUFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE3BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIwBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yMgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIzBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjQFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yOAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI5BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMzDtYe90Z6nu2QDSkLRvblOV03MTQ%2BTm0ytfqvbm%2BoOJjg%3D%3D&__VIEWSTATEGENERATOR=4F4B5F1E&ctl00%24MainContent%24ASPxButton{num_of_question}=&DXScript=1_42%2C1_75%2C2_27%2C2_34%2C2_40"
-    make_a_request("http://eport.fesmu.ru/eport/eport/studtst2.aspx", data_select_question)
-
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst2.aspx", data_select_question)
+    return a
 #Тыкнуть первый и к следующему
 #POST /eport/eport/studtst3.aspx HTTP/1.1
 def check_first_and_next():
     data_check_first_and_next = "ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTI5MTM5NzM3Nw9kFgJmD2QWAgIDD2QWAmYPZBYCAg8PZBYSAgEPPCsABAEADxYCHgVWYWx1ZQUYKDIpINCf0L7Qt9C90LDQvdC40LUgLSAzZGQCBw88KwAEAQAPFgIfAAUQ0JfQsNC00LDQvdC40LUgMWRkAgkPFCsABA8WAh8ABSvQktCw0Ygg0LvQuNC80LjRgiDQstGA0LXQvNC10L3QuCAxOSDQvNC40L0uZDwrAAwBABYEHglGb3JlQ29sb3IKTx4EXyFTQgIEZGRkAgsPDxYCHgRUZXh0BXombmJzcDvQrdC80L%2FQuNGA0LjRh9C10YHQutC40LUg0LzQtdGC0L7QtNGLINC90LDRg9GH0L3QvtCz0L4g0LjRgdGB0LvQtdC00L7QstCw0L3QuNGPINC40YHQutC70Y7Rh9Cw0Y7RgjombmJzcDsmbmJzcDsgPGJyPmRkAg8PDxYCHwMFHiZuYnNwOzEuINC90LDQsdC70Y7QtNC10L3QuNC1O2RkAhMPDxYCHwMFICZuYnNwOzIuINGN0LrRgdC%2F0LXRgNC40LzQtdC90YI7ZGQCFw8PFgIfAwUhJm5ic3A7My4g0YTQvtGA0LzQsNC70LjQt9Cw0YbQuNGOZGQCGw8PFgIfAwUcJm5ic3A7NC4g0YHRgNCw0LLQvdC10L3QuNC1LmRkAh8PDxYCHwMFGyZuYnNwOzUuINC40LfQvNC10YDQtdC90LjQtWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYCBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjA0%2Bk22ByzKq5L7zouSrrJbMziS20QR38bdXSKqlADvvqw%3D&__VIEWSTATEGENERATOR=A8B80323&__EVENTVALIDATION=%2FwEdAAc%2FlZpllc25PN%2BYPogZdEuvCa17vhDUriBurXCsNy590WMU%2Ff8RYiHeDshdCQG6KXsl%2BbxYKsnWKi1oDF%2BSPbsJHS3vs9PY66cqRnl9zzvdQgrZ%2B0y1djOQFJQdjlbLnVhP%2FHXZRS6bBCR%2FaTH01z%2B9bOik%2B0yMqvUzm3kYLHgnd9IAIvs1oV7es8UR7FcUYQ4%3D&ctl00%24MainContent%24hfo1=1&ctl00%24MainContent%24hfo2=0&ctl00%24MainContent%24hfo3=0&ctl00%24MainContent%24hfo4=0&ctl00%24MainContent%24hfo5=0&ctl00%24MainContent%24hf1=0&ctl00%24MainContent%24ASPxButton5=&ctl00%24MainContent%24ASPxCheckBox1=C&ctl00%24MainContent%24ASPxCheckBox2=U&ctl00%24MainContent%24ASPxCheckBox3=U&ctl00%24MainContent%24ASPxCheckBox4=U&ctl00%24MainContent%24ASPxCheckBox5=U&DXScript=1_42%2C1_75%2C2_27%2C2_34%2C2_40%2C2_30"
-    make_a_request("http://eport.fesmu.ru/eport/eport/studtst3.aspx", data_check_first_and_next, streaming=False)
-
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst3.aspx", data_check_first_and_next, streaming=False)
+    return a
 #Тыкнуть первый и к следующему
 #POST /eport/eport/studtst3.aspx HTTP/1.1
 def check_some_case_and_next(array1):
@@ -338,7 +329,12 @@ def check_some_case_and_next(array1):
 #POST /eport/eport/studtst3.aspx HTTP/1.1
 def check_first_and_return_main_menu():
     data_check_first_and_return_main_menu = "ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTI5MTM5NzM3Nw9kFgJmD2QWAgIDD2QWAmYPZBYCAg8PZBYSAgEPPCsABAEADxYCHgVWYWx1ZQVTKDIpINCj0YXQvtC0INC30LAg0LHQvtC70YzQvdGL0LzQuCDQsiDQv9C10YDQuNC%2B0L%2FQtdGA0LDRgtC40LLQvdC%2B0Lwg0L%2FQtdGA0LjQvtC00LVkZAIHDzwrAAQBAA8WAh8ABRHQl9Cw0LTQsNC90LjQtSAyMmRkAgkPFCsABA8WAh8ABSrQktCw0Ygg0LvQuNC80LjRgiDQstGA0LXQvNC10L3QuCA0INC80LjQvS5kPCsADAEAFgQeCUZvcmVDb2xvcgorHgRfIVNCAgRkZGQCCw8PFgIeBFRleHQFWdCc0LXRgNGLINC%2F0YDQuCDQt9Cw0LTQtdGA0LbQutC1INC80L7Rh9C10LjRgdC%2F0YPRgdC60LDQvdC40Y8g0L%2FQvtGB0LvQtSDQvtC%2F0LXRgNCw0YbQuNC4ZGQCDw8PFgIfAwVNMS4g0J%2FRgNC40LzQtdC90LXQvdC40LUg0L%2FRg9C30YvRgNGPINGB0L4g0LvRjNC00L7QvCDQvdCwINC90LjQtyDQttC40LLQvtGC0LBkZAITDw8WAh8DBSwyLiDQvdCw0LfQvdCw0YfQtdC90LjQtSDQvNC%2B0YfQtdCz0L7QvdC90YvRhWRkAhcPDxYCHwMFTzMuINCy0L3Rg9GC0YDQuNCy0LXQvdC90L7QtSDQstCy0LXQtNC10L3QuNC1IDUlINGA0LDRgdGC0LLQvtGA0LAg0LPQu9GO0LrQvtC30YtkZAIbDw8WAh8DBWM0LiDQv9GA0LjQvNC10L3QtdC90LjQtSDRgtC10L%2FQu9C%2B0Lkg0LPRgNC10LvQutC4INC90LAg0L7QsdC70LDRgdGC0Ywg0LzQvtGH0LXQstC%2B0LPQviDQv9GD0LfRi9GA0Y9kZAIfDw8WAh8DBQFfZGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b241BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMDQE5T9V7VMreWdfpku7yNIDDWy4F0wCwHlTSIdKybDHIQ%3D%3D&__VIEWSTATEGENERATOR=A8B80323&__EVENTVALIDATION=%2FwEdAAfDRLP7NE8mELLiT2ZK%2FjipCa17vhDUriBurXCsNy590WMU%2Ff8RYiHeDshdCQG6KXsl%2BbxYKsnWKi1oDF%2BSPbsJHS3vs9PY66cqRnl9zzvdQgrZ%2B0y1djOQFJQdjlbLnVhP%2FHXZRS6bBCR%2FaTH01z%2B9zErVTJvNAHMQny1oGGVfJe3IXe%2FaUiAq3S3lPvQuuas%3D&ctl00%24MainContent%24hfo1=1&ctl00%24MainContent%24hfo2=0&ctl00%24MainContent%24hfo3=0&ctl00%24MainContent%24hfo4=0&ctl00%24MainContent%24hfo5=0&ctl00%24MainContent%24hf1=0&ctl00%24MainContent%24ASPxButton04=&ctl00%24MainContent%24ASPxCheckBox1=C&ctl00%24MainContent%24ASPxCheckBox2=U&ctl00%24MainContent%24ASPxCheckBox3=U&ctl00%24MainContent%24ASPxCheckBox4=U&ctl00%24MainContent%24ASPxCheckBox5=U&DXScript=1_42%2C1_75%2C2_27%2C2_34%2C2_40%2C2_30"
-    make_a_request("http://eport.fesmu.ru/eport/eport/studtst3.aspx", data_check_first_and_return_main_menu)
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst3.aspx", data_check_first_and_return_main_menu)
+    return a
+
+
+
+
 
 # ЗАЙТИ НА ПЯТЕРКУ
 #GET /eport/eport/studtst5.aspx HTTP/1.1
@@ -370,6 +366,29 @@ def go_to_check_answer5():
 
     return answers_array
 
+
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def answer_all_questions():
+    select_question("1")    
+    for i in range(30):
+        space = ""
+        if (i+1) < 10: space = " "
+        
+
+        var1 = go_to_check_answer5()
+        
+        if var1 == False:
+            return True
+
+        new_list = check_some_case_and_next(var1)
+        
+        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Вопрос {i+1}{space}: {new_list}")
+    return False
+
 #check_results_of_tests_by_num_of_pred
 #POST /eport/eport/studtst1.aspx HTTP/1.1
 def check_all_results_of_tests_by_num_of_pred(num_of_pred=0):
@@ -391,13 +410,54 @@ def check_all_results_of_tests_by_num_of_pred(num_of_pred=0):
 #POST /eport/eport/studtst2.aspx HTTP/1.1
 def close_test():
     data_close_test = "ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTUwNzg4NDI2OQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIDD2QWQgIBDzwrAAQBAA8WAh4FVmFsdWUFKCgxKSDQoNGD0YHRgdC60LDRjyDRhNC40LvQvtGB0L7RhNC40Y8gLTFkZAIJDzwrAAQBAA8WAh8ABSvQmNC00LXQvdGC0LjRhNC40LrQsNGC0L7RgCDRgtC10YHRgtCwIDEyNDUwZGQCCw8UKwAEDxYCHwAFKtCS0LDRiCDQu9C40LzQuNGCINCy0YDQtdC80LXQvdC4IDIg0LzQuNC9LmQ8KwAMAQAWBB4JRm9yZUNvbG9yCqABHgRfIVNCAgRkZGQCDw8UKwAGZGRkZDwrAAcBABYEHgtDc3NGaWxlUGF0aAUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHgpDc3NQb3N0Zml4BQVHbGFzczwrAAYBABYCHhFTcHJpdGVDc3NGaWxlUGF0aAUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCEQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAhMPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIVDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCFw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAhkPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIbDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCHQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAh8PFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIhDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCIw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAiUPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAInDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCKQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAisPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAItDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCLw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAjEPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIzDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCNQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAjcPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAI5DxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCOw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAj0PFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAI%2FDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCQQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAkMPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAJFDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCRw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAkkPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WIQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjA0BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMDIFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24wMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjQFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b241BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjcFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b244BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uOQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEwBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEzBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTQFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE5BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yMQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIyBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjMFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yNAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI1BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjYFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yNwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI4BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjkFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zMGNg%2Btc0Yd%2B%2BfMAWH2wgXducRETufa9xvvwxgDjN4cZ%2F&__VIEWSTATEGENERATOR=4F4B5F1E&ctl00%24MainContent%24ASPxButton03=&DXScript=1_42%2C1_75%2C2_27%2C2_34%2C2_40"
-    make_a_request("http://eport.fesmu.ru/eport/eport/studtst2.aspx", data_close_test)
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst2.aspx", data_close_test)
+    return a
+
 
 #Завершить тест при меньше 70 % ошибке
 #POST /eport/eport/studtst4.aspx HTTP/1.1
 def close_test_70_error():
     data_close_test = "ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTQ4OTc2MzU4MA9kFgJmD2QWAgIDD2QWAgIBD2QWAgIDD2QWRgIBDzwrAAQBAA8WAh4FVmFsdWUFKCgxKSDQoNGD0YHRgdC60LDRjyDRhNC40LvQvtGB0L7RhNC40Y8gLTFkZAIFDw8WAh4EVGV4dGVkZAIHDw8WBh8BZR4JRm9yZUNvbG9yCpEBHgRfIVNCAgRkZAITDzwrAAQBAA8WAh8ABQEgZGQCFQ8UKwAEDxYCHwAFiQHQn9GA0L7RgdC80L7RgtGAINC%2B0YLQstC10YLQvtCyINC30LDQtNCw0L3QuNC5INCy0L7Qt9C80L7QttC10L0g0YLQvtC70YzQutC%2BINC%2F0YDQuCDQstGL0L%2FQvtC70L3QtdC90LjQuCDQvdC1INC80LXQvdC10LUgNzAlINGC0LXRgdGC0LAuIGQ8KwAMAQAWBh8CCpEBHglGb250X1NpemUoKiJTeXN0ZW0uV2ViLlVJLldlYkNvbnRyb2xzLkZvbnRVbml0BDI1cHQfAwKECGRkZAIXDxQrAAYPFgIeB1Zpc2libGVoZGRkZDwrAAcBABYEHgtDc3NGaWxlUGF0aAUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MeCkNzc1Bvc3RmaXgFB1JlZFdpbmU8KwAGAQAWAh4RU3ByaXRlQ3NzRmlsZVBhdGgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCGQ8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAhsPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBwUFR2xhc3M8KwAGAQAWAh8IBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIdDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCHw8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAiEPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAIjDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwcFBUdsYXNzPCsABgEAFgIfCAUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCJQ8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAicPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAIpDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCKw8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAi0PFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBwUFR2xhc3M8KwAGAQAWAh8IBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIvDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwcFBUdsYXNzPCsABgEAFgIfCAUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCMQ8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAjMPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAI1DxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCNw8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAjkPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAI7DxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCPQ8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAj8PFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBwUFR2xhc3M8KwAGAQAWAh8IBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAJBDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCQw8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8HBQVHbGFzczwrAAYBABYCHwgFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAkUPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAJHDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCSQ8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAksPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZAJNDxQrAAYPFgIfBWhkZGRkPCsABwEAFgQfBgUjfi9BcHBfVGhlbWVzL1JlZFdpbmUvezB9L3N0eWxlcy5jc3MfBwUHUmVkV2luZTwrAAYBABYCHwgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCTw8UKwAGDxYCHwVoZGRkZDwrAAcBABYEHwYFI34vQXBwX1RoZW1lcy9SZWRXaW5lL3swfS9zdHlsZXMuY3NzHwcFB1JlZFdpbmU8KwAGAQAWAh8IBSR%2BL0FwcF9UaGVtZXMvUmVkV2luZS9BU1B4QnV0dG9uLnNraW5kAlEPFCsABg8WAh8FaGRkZGQ8KwAHAQAWBB8GBSN%2BL0FwcF9UaGVtZXMvUmVkV2luZS97MH0vc3R5bGVzLmNzcx8HBQdSZWRXaW5lPCsABgEAFgIfCAUkfi9BcHBfVGhlbWVzL1JlZFdpbmUvQVNQeEJ1dHRvbi5za2luZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WAQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjAz1nJ55AxZ4GtGPuU7FLyU46WjfL997Ctb045KzUnZOCI%3D&__VIEWSTATEGENERATOR=6D81C9BC&ctl00%24MainContent%24ASPxButton03="
-    make_a_request("http://eport.fesmu.ru/eport/eport/studtst4.aspx", data_close_test)
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst4.aspx", data_close_test)
+    return a 
+
+def try_to_check_all():
+    select_question("1")
+    for i in range(30):
+        check_first_and_next()
+
+
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def check_all_first_cases_and_verify(num_of_error=0):
+    num_of_error += 1
+    num_of_error_vsego = 5
+    if num_of_error <=5:
+        try_to_check_all()
+
+        res = check_first_and_return_main_menu()
+        soub = BeautifulSoup(res.text, 'html.parser')
+        a = soub.select('table[class="btntest"] > tr > td > table > tr > td[id^="ctl00_MainContent_ASPxButton"]')
+        if len(a) == 30:
+            for i, item in enumerate(a):
+                #if 'class="dxbButton_Glass"' in str(item):
+                #    print(f'{i} - прорешан')
+                if 'class="dxbButton_Aqua"' in str(item):
+                    print(f'Внимание!, {i+1} - не прорешан, пробую еще раз ({num_of_error}/{num_of_error_vsego})...')
+                    return check_all_first_cases_and_verify(num_of_error=num_of_error)
+                #else:
+                #    print(f'{i} - error')
+        else:
+            print(f'Внимание!, что-то пошло не так, пробую еще раз ({num_of_error}/{num_of_error_vsego})...')
+            return check_all_first_cases_and_verify(num_of_error=num_of_error)
+        return True
+    else:
+        print("Не получается, извините, завершаю работу программы")
+        quit()
+
 
 
 def admin():
@@ -489,10 +549,7 @@ def admin():
 10 - cls
 8 - check_some_case_and_next(go_to_check_answer5())
 """
-def check_update():
-    pass
-def install_update():
-    pass
+
 auth_bool = False
 def main():
     auth_bool = False
@@ -500,20 +557,25 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
-    print("Добро пожаловать!!! Проверяю обновления...")
-    process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.DEVNULL, text=True, shell=True)
-    process = subprocess.Popen(['git init'], stdout=subprocess.DEVNULL, text=True, shell=True)
-    process = subprocess.Popen(['git stash'], stdout=subprocess.DEVNULL, text=True, shell=True)
+    print("Добро пожаловать!!! Проверяю обновления...\n")
+            
+            #проверка на апдейт и установка
+    os.system('cd ~/fenix-test_solver')
+    os.system('git init')
+    os.system('git stash')
     process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
     for line in iter(process.stdout.readline, ''):
         if "Already up to date" in line:
-            print("\nОбновления не найдены, у вас последняя версия!(нестабильная)\n")
+            print(line)
             break
         elif "Updating" in line:
-            print("\nОбновление установлено успешно, перезапусти меня!!!\n(введи \"test\")\n")
+            print("Обновление установлено успешно, перезапусти меня!!!\n(введи \"test\")")
             quit()
+
+        ###############################
     
     while True:
+
         print("""
 ---------------------------------------------------------------
 Выберите действие:
@@ -542,9 +604,13 @@ def main():
                     print("Кажется в данных ошибка! Попробуйте изменить логин или пароль")
                 #continue
         elif chose == "3":
-            print("Введите новые данные:")
+            if get_login() and get_pass():
+                print(f"Ваши данные: {get_login()}:{get_pass()}")
+            print("\nВведите новые данные (0 — вернуться в меню)")
             login = input("Логин: ")
+            if login == "0": continue
             passw = input("Пароль: ")
+            if passw == "0": continue
             set_login_pass(login1=quote(login), pass1=quote(passw))
             print("Спасибо! Записал в файл...")
             continue
@@ -559,7 +625,7 @@ def main():
 1. Количество ошибок (установлено от {num_of_mistakes_ot} до {num_of_mistakes_do})
 2. Сколько ждать времени чтобы завершить тест(установлено от {time_to_wait_ot} до {time_to_wait_do} секунд)
 3. Исправить ошибку молодости (error)
-0. Вернуться
+0. Вернуться в меню
 """)
             chose2 = input("Действие: ")
             if chose2 == "1":
@@ -584,421 +650,33 @@ def main():
     
             if chose2 == "3":
                 a = input("Как зовут ошибку: ")
-                dima = """                                                                                 -+++*#+-:::::::::::
-                                                                                 =*++*#+-:::::::::::
-                                                                                 -+****+-:::::::::::
-=======+=+===============================------::....                            =****#+--::::::::::
-=======================+===========================+++====++=+++++++++++++++===+++++**#+=----:::::::
-=======++====++++=+====+==================================+==+++=+++++++=+++++++++++*##*+=------:::-
-===================================================++++*+++++++++.-+***********++++**#%*+==-------:-
-=======================================================+++++++..-+.:=**********+++++**#++===--------
-=======================================================+++++=.-+++++--=**+++***+++++**#++====-------
-++++++++++++++++++*****+====------------------------=====++-:-=========+*++++++++++***#++====-------
-==================-=--=*+==-------------------------====++--++===+++++++++*******#*****++===--------
-==================-----+==-----------------------------==--==============+====+++**+***+====--------
-===============--=-----+=-----------:::-===+**#****+----------================+++**+***+====--------
-==========-=-----------==----=---:=+***##%%%@@@@@@@@%##+----------===========+++++*++**+===---------
-++++++++***-------:-----=-----:-+*#%@%@@@@@@@@@@@@@@@%@%%#*=--=======++++**++=+++++++**+===-------:-
-           -------:-------::-=+*#@@@@@@@@@@@@@@@@@@@@@@@#*##*            .@=+==++++++**+==----:::::-
-           -------:--:::-::=++%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@:.           *=+==++*+++**+==--::::::::
-           -------::::::-:-+#@%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#+-.         +=++==+++++**+=--:::::::::
-           -------:::::::-=#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#+         *=+===++++++*==--:::::::::
-           :------:::::::+*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@# .       +=+===+++++++==-::::::::::
-           :-----:::::::=##%@@@@@@@@@@@@@@@@@@@@%%%%%%%####@@@@@%+= .     *=====+++++++=--:::::...::
-           :-----:::::::+##@@@@@@@@@@@@@%%%%%%%%%%%%%#####***@@@@@+-.     *======++++++=--:::::...::
-           :----:::::::-+#%@@@%%%%@@%%%%%%%%%############*****%@@@@#=     +======+++++*=--:::......:
-           :--:::::::::+*%%@%%####%%%%%%######*****####********#@@@%#-    +======+++++*=--::.......:
-           .:::::::::.-*%@@%%##*########************************#@@@#-    *======+++++*=--::........
-            :::::::::.=#@@@@*+******##%##***********###%%%#******%@@#:    *-=====+++++*=--:........:
-            :::::::...-#@@@#++++*#%@@@%%%###++++++*#####%%%@%#*++#%@%+    *-=====++++++=--:.........
-            :::::::...:+%%%#+==+%%%**+++++**++++++**********#%%*++#%#-    *-=-===+=++++=--:.........
-            :::::::...:+#%%#+=+**++++*****++++++++++**#####******=*%#:    *-=-===+==+++=--:.........
-            :::::::....=##%+==+==+****#####*+===+=+*##%%###*#***+==#+     +-=--==+==+++=--:.........
-            :::::::....=+##=====+**+*#%%%%%#*+===++*#%%%@@@%#*#*+==*-     +-=--==+==+++=--:.........
-            :::::::....-+**---==++*#%@@%#%%#+=====+*#%%#@@@**%#*+=-+      +-=---=+==+++--::.........
-            :::::::.....-=*---==+****######*+======++##%###**+***+==      +-=---=+===++--::.........
-            :::::::.... .=+---====+++*****+==========++****+++++++=-+++   =-----=+===+=--::.........
-            ::::::.....-===:--======+++++=============++++++++=====-=**   +-----=+===+=--:..........
-            ::::::....-*=-=:--======+++++++=========-=+++++++++====-=+#   +------+===+=--:..........
-            :::::.....+*===:----=======+++++===-==+====*++++==++===-+*#   +------+===+=--:..........
-            ::::::....=*==+:----=======++**+-*@*=++*@#+**++===+++==-#*+   =:-----+===+=--:..........
-             :::::.....++*+-:---======++**+**#*+++**##*++++++=+++==-*+:   =------*===+=--:..........
-             ::::...... =**=::--======+++++++++++*++++++++++=======-=+    =:-----*===+=--:..........
-             ::::...... -==+-:---=====++++=+++++**+++++++++++=====-=+:    +:-----*===+=--:..........
-             ::::....... -==-:---=====++====+**#######**+++++++===-=-     +:-----*===+=--:..........
-             ::::......  .-==----=-=======*##%@%@@@@@@@%#*++++====-       =:-----*===+=--:..........
-             ::::......  .   .-----=====+*##*****##***#****+++===--       +:-----*-==+=-::..........
-             :::.......  .    :--==-===++++===+++******+++++++===-.       +:-----*-====-::..........
-             .::.......  .    .---=====+++++=+++*******+++++++===-        +:-----+-====-::..........
-             .::.......  .     :----====++=++++++********+++++==-         +:-::--+--==-:::..........
-             .:::......        :---======++++++++******+++++++==--.       +:::::-+---=-::.....  ....
-             .::......      ..:----=========+++++++***++++++++===%#+-     +:::::-+---=-::..        .
-              ........   :::.:+==============++++++****+++++++===%@@#=:   +::::::=---=-::..        .
-              ... ..  .:---::=@*==============+++++++++++++++++++#@@@*+=... :::::=-----::..        .
-             ...:::...-==-::=*@#+===+++++++===+++++++++****+++++*%@@@#*+=::---=-:-:----::.         .
-            .:::---:.:===--==+@@++++++++++++**************+++++*#@@@@++*++=====+===-.:-::.          
-     ....:==++=::-:--==+=--==#@@#++++++++++++*******************#@@@@+++*++===++==++=+-:.           
-..::-=====+++++==::==++==--+++@@@*++++++++++********************%@@@@+*+++++===+++++++++=--::.      
--==+++*++++++++=+++++++=-=+===@@@%*+++++++*********************#@@@@@+++*++++===++++++==+***++=-:   
-+++******++++++==++++===+=====@@@@@#**+*+++******************##%@@@@%+++++++++====+++=-=*###****+=-.
-++*********++=++==+===+++=====@@@@@@@%##********************#%@@@@@@%=++++++++++======+#########*+++
-++*******++*#++++===++++======@@@@@@@@@@@%##########****##@@@@@@@@@@%=++++++++*++++==*###########***
-++*******++*+==+=====+======-=@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=+===+++++++++++*#*##########*#
-++******+=====+===============@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====+=++++*++++******#######*#
-++*+==========================%@#@+@@@@@@@@@@@@@@@@@@@@@@@@@@@#%@@@@@=======+++++++++**+*******#####
-=+*=============++============+@**@@@@@@@@@@@@@@@@@@@@@@@@@@@*@@%@@@@=======+++++++++++++++****#%###
-=+#============++=============+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@========++++++++++++++++**%##*#
-=+#+=========+++==============+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+++++====++++++++++++++***%##*#
-=+#+========+++===============++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%++++=====++++++++++++++++####*#
-=+#*=======+++===============++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*++++=====+++++++++++++++*###**#
-=+*#======+++================++%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+++++=====+++++++++++++++*###**#
-=+#%======++================+++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#++++++==+++++++++++++++++*###**#
-=+#%+====+++================+=+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++++++++++++++++++++++++++####**#
-=+#%+====++=================+++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#+++++++++++++++++++++++++####**#
-=+#%*===+++=================++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%++++++++++++++++++++++++*###***#
-=+###===+++=================++%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++++++++++++++++++++++++*###***#
-=+###==+++==================++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++++++++++++++++++++++++####***#
-=+*##++++=======+++=========++@@#***#@@@*******@@%**@@@@#@@@@@#****#++++++++++++++++++++++++#####**#
-=+###*==+=====+++++++=======++@@@@#@@@@#@@@%*#@@@@%*##@**#@@@@@@%%%@*+++++++++++++++++++++++#####**#
-=+*##*+=====++++++==========++@#*#%%@@@@@*@*#@@@@@@@*#@@*%@@@@@@*@@@*++++++++++++++++++++++*######*#
-=+*##*+==++++++++==========+++%%*****@@@#%@*#@@@@****#@@*@@@@****@@@#++++++++++++++++++++++*#####***
-=+*###+==+++++++===========++*@#***#%#@@*@@*#@@@@@***#@%*@@@##***%%@#++++++++++++++++++++++**++++***
-=+*###*+=++++++===========++++@@@#@**@@#*#@*@@@@@%@%*#@%*%@@@@@*#@%@##+++++++++++++++++++++**+******
-=+*###*+++++++============+++*%#**@%@@@@**%@@%#@@@@%***@**%@@@****#@#@*+++++++++++++++++************
-=+*###**+++=+===========+++++*@@%#%@@@@@@#***#@@@@@@@*@@@*@@@@@@@#%@@@@+++++++++++***+*+++*#********
-++*#%##*+=+++==========++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#@@@@@@@@@@++++++++++*******************
-++*####*+++==========+++=+++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#@@@@@%@@@*++++++++++******************
-++*####*++++=====++++++===++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+++++++++++*****************
-++**###**+======+++++++===++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@**+++++++++++*****##*********
-++**###**+====++++++++====++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#*+++++++++++*****##*********
-++**####*+===+++++++++====++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#*+++++++++******###*********
-++**####**+==+++++++++====++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#**+++++++++*****#####*******
-++**####**+=+++++++++=====++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#**+++++++++++***####********
-++**####**++++++++++++====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#**++++++++**++**###*********
-+=**####**++=+++++=+++====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%**++++++++***++*####********
-+=***###***++++==+++++====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@***++++*++**#**#####********
-+=***####**+++==+*#+*+====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@***++***+*%@***######******#
-+=+**####**+==++*+#**+====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#*+++*****%#***#######*****#
-+=+**###***++=+++++**+====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#**++******+++*#############
-==+**####**+++=++++*+=====++**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#*++++*********#########***#
-"""
-                alena ="""
-.................::::::::::::::::::--...      .................::::::::::::::--:----=+++++===+++++==
-.................:..::::::::::::::::-...  .         ..............::::::::::::::::::-=========+++==+
-..................::.:::::::::::::::-...   .            ............:::::::::::::::::-=========++==+
-....................::::::::::::..::-...                   ...........:::::::::::::::-========+++==+
-..................::::::::::::....::=....                       ................::::::-========++=++
-.....................:::::::::....::=...                             ...............::--===========+
-.......................::::::::...::=...                                 ............::-===========+
-.......................::::.:.....::=...                                     ..........::-==========
-..................................::=...                                         ...::..:--=========
-...................................:=...                                             ....:---=======
-...................................:=...                                                  :------===
-...................................:-:..       ...                           .        .      .:----=
-...................................:-:.. ....:*##*+:                         .......... .        ..-
-...................................:-:.-+**+++*%@#+==:                   . ..... .. ..... .        .
-...................................:-=*#@@@%*++**#%+===.                 .. ... .     ... ..       .
-...................................:=*#@%*==-----=+**==+=               ... . . .     . . ...       
-.................................::=+*%#+=------::-+*+++++.           ...  ..         .   ...       
-.................................:++*##*+=-------::-+*+++++.           . . .    .          ..       
-................................:=*****++==------::--+++*+++.         ...       .           ..      
-................................-+*****++====---=+*++=++**+**.       ....       . ....      ...     
-...............................:=***+#%#**++====++**+=+##%***+.      ....              ........     
-...............................:+******@@@%#*==+#%@@@@#*#@%##*:        .         .         . ...    
-...............................-**#*#%@#@@##*+-=+#*#*#%*#%@%##*.    . .              .        ..    
-..............................:=*######******=:---====--=#%##+*-    . ..        . . . .   .   .     
-..............................:=*#%#%*++++=+*=::-::::::--+@@#*+:    ...            .  .       .     
-..............................:+#%#%#++====+*=--==------=+@#%#+.    ...             .         .     
-..............................:+##%@#+++===+##*##+==----=*%*#*-.  . .. .             .        .     
-..............................:+*#@@@*+==+++++==----====+#%##*=.  .  .           .            .     
-..............................-**#@@@#++++++*%%%%#*+=====%%#%*+.    ..                        ..    
-..............................=#**%@@@*+++*##%%%#*++====#@#%#*+:.   ...                .      ..    
-..............................*#**#@@@@*+++++***++===++*@%#%#*=..   . .               .. ...  ..    
-.............................:#****%@@@@%*++++==--==+*%@%*##*+:     .. .             ...      ..    
-.............................:*#*#*#%@@@@%#*++++++*####*##*++.       .    .        ..               
-..............................+#*####@@@@#*##*******+*#@@***..       ...   .     .    .  ..      .  
-.................::.:........=*#####%%@@@#****+++++=+*%@%###+.       ...   .           ..  .   .    
-..............::::::::::::..-*#@@%%###@@@%*+++++++==+*%%@#%%%*        ...   ...        .  ..        
-.............::::::::::::.::*#%@@%@@@##*@@*+++======+#@@@@@@@+         ..              .  ..        
-...........::::::::::::::::-##%%%@@@@@@%*%%*+=+====+*#%@@@@@#=        .....            .  . ...     
-...........::::::::::::::--=##%##%@@@@@@@@%%#+++++*#%%%%%%%#=.  ..     ......             .         
-..........::::::::::::--=-===*###@@@@@@@@@@@@@@@@@@%%%%%#%*:     . ...... .....          . .        
-.........:::::::::::::--------#*#@@@@@@%@@@@@@@@@@%%%#@@*:         ............. ...       ...      
-........::::::::::::-::--------*#@@@@@@##@@@@@@@%@@@@##=.  :... .  ....... . ..... .  ..     .      
-.......::::::::-------:-------:-+##%%%*+=#@@@@@#@@@@#=.      ...  .......  .. ..             .      
-......::::::::---------:------:--==+==--+:@@@@@@@@@*         ...  ...... ....               .       
-.....:::::::-----------:------:::........ -@@@@@@@%           .  ...... .....  . . . . . ...       .
-.....::::::----------=-----:-:::::......   @@@@@@%          ...  .....  .......  . ..  .    ........
-....::::::-----------=-------:.::::..      -@@@@@         ..    ...... ........  .  ..............::
-....:::::------------==-----::.......       @@@%        ....    .............................:::::::
-....:::::-----------=-==--:::: ......:.     .@#      ......    .......::................::::::--=---
-....::::------------===+==-:::.........:     =    . .......    ......:::..:........:::::-==--::::::-
-..::::::---------=--===++=-:::. ........::     .    ........   .. ..:-:::::....:::-==-:::::::::::::-
-...:::::----------=-==+++=--::..............       .........  ..  ..=-::::.....:::::::::::::::::::--
-..:::::-----------=-==++++---:................    ..........    ....=--::...::.:::::::::::::::::----
-..:::::------------===++**=---::...............  .:...::...    ....==--:.::::...:::::::::::::::-----
-.:::::-----=---::--===+++#*===-::::........ ......::::::::........:*=-:-::::....:::::::::::::-------
-::::::----===---::--==+***#===--:::::...... .....:::-:---:...:::::+*=---:::..::.::::::::::----------
-:::::----====---:--===++*##+===--::::...:++:.:.....:-:--:::::-::-.+*=--:::--::::.::::::-::----------
-::::::--====----=+*+++*+***+====---:::..+#*+=-:..::-:---::::-:---:=+==-::....::::-------------------
-:::::---====++===-===+**#****+==--==-:=+#%%*#*=--==----:--:--=--::-++-::---::....:------------------
-:::::---====----:-----=*##****+=+--*@@%@%+------==:-=---=-==-=--::-====--:....:..-------------------
-:::::---=======---::+@@@@@@@@@@@@@@@@@===-====+***#@++=#@@@@@@*=---:::....:::::::-------------------
-::::--===========::@@@@@@@@@@@@@@@@@@#=++=-==+@@@@@@@@@@@@@@@@@@@@@+  ..........:::-----------------
-::::--===========-@@@@@@@@@@@@@@@@@@%==+++=-=+@@@@@@@@@@@@@@@@@@@@@@#  ......::::-------------------
-::::-=============@@@@@@@@@@@@@@@@@@@**+====-===::@@@@@@@@@@@@@@@@@@@=......:---.-------------------
-:::--=============+@@@@@@@@@@@@@@@@@@+=-::+*+*#%##@@@@@@@@@@@@@@@@@@@@:::------==------------------=
-:::--============-+==++*%@@@@@@@@@@@==++++**#%@@@@@@@@@@@@@@@@@@@@@@@@--=====+=--------------------=
-:::-=============++==+=++++====+*@@@#%#+++==+#@+==+#@@@@*#@@@@@@@@@@@@==++++=--------------------=-=
-::--==================+++=======---+@@+=+***+++:.:=-----::-----=======--===---------------------====
-:---===========================---=++==+#+-+--=++*=---::::::----=-===---=----------------------=====
-:---==========+++=============---:+=+##**#+=---:-----::..::-::::-:-==-------------------------======
-----========++++++++===========--=--**#*-:::+*==:::::::..::::::::::--=----------------------========
-----=======+++++++++============--==--=-::::....::::::::.:::::::::::---------------------===========
-----======+++++++++=+===========---==--=-::::...:-::::::.::::::::::::-----------=-====-=-===========
-----=====++++++++++=============-==--==---:.::.::------:.::::::::::::-=------=======================
----====++++++++++++=========---+---=====-:-::-:::----:::.::::::::::::::====-========================
----====+++++++++++===========--------------=--::::::::::...:..:::::::::=============================
----====+++++++++++========-------========-::--...::::::-::#::.:::::::::=============================
----===++++++++++++======----=========--=--::.:=-:::::::::.#+:-:.::::::::============================
---===+++++++++++++===========-----------:::...:-==-::::::.::::-::::::---============================
---===++++++++++++++========---=--------::::::...:===-::--:..::::::::----===========================+
--===++++++++++*++++==========-=====----::::..:...:-===-:::::.::::-::::--==========================#%
--===++++++++*+***+++======--========----------:...:-====-::::.:::::-:---=======================+#%%%
-===+++++++++++***+++++================-----:----:::::--===::::::::::---:=====================+#%@%%%
-===+++++++++*+***+++++================---=+:--@#--::::---==::::::-:::---====================*%%@%##%
-==+++++++++******++++++==--===+++=====---:::=----=---:::---::-:::::::::-+================+*%%@%%##*#
-==+++++++++*******++++++====-=============--@=++++++=--::---:::::::::--=+===============*%%%%%%##**#
-=++++++**********+++++==+====+++++++++======@:--===++*+=--:::--::::::-=++============+#%%@%%########
-+++++************+**+++=====++=++**+++==--==@-:::---=+++++=-:::-::::-==++==========+#%%@%%##########
-++++*****************+++++=++*+==++++====--=@-::::::---======---::---=++=+=======+#%@@%##**###*#####
-+++**********************++++=++==++*++=====@=--==--=--------:-----=**+=++=====+#%@@%%%%#**********#
-++************************++*++++++++*++*#=+@*=%+===--------::---+*##+==+===++#%@@%%%%%######*******
-+************#####**********+****++++======*@#=====+++++==---:-++=+++--=+=++#%@@@%##############****
-+***********#####*****#*****+*========-====*#%==-==========-==+======-=-++#%@@@%%######*****#######*
-**********#######******#****++**====+==--==**%-:----====--==++==+=+====++%%@%@%##**#######***#######
-*********#######**#*****#********+++==-----#*@+--::----===++=-++==+====*+%@%%######***#######****###
-******#*########*********#*****#**+++==+++=#*@+**+=====+++++=====+===+=##%%%%%########**#######*****
-*****###########***#******#*+++****+++++++=#@@*@%***+++++++++=+++*+=++=%%#%####%#########***######**
-"""
-                elia = """
-=-===============+++++++++++++++++*====++=+++++*##*+******************##*******##*#############*****
--=================++++++++++++++++++*++=+=++++++*+**************#******##**######*#********#####***#
-=================+==++++++++++++++++++**+=++++++*+*********###########**###***********##############
---=================+=++++++++****+++++++***+++++*++***##**************##############################
---==-================+++++++*+***************++++++****##******########################****#########
---====================++++++++****************#*++++******#**#######################################
----=--===============++=+++++++********#*********#++********##***###################################
-------================++++++++++*******************#*********#######################################
-------=================%*+++++++***********##****######*******###############################*+#####
-------==-==============%#%%++++**************#####*######*****###%###############%*-+==-:.:=   -####
------=---==============##%@@@****************#**############**#####%###############++***#****#######
------=---==============**#@@@@@%****************####################################################
------==--==============**%@@@@@@@#**************####################################%#############%%
--------=-=-============+*%@@@@@@@%##**********#*########################%%%%##%%%##%#%%%###%%%#%%#%%
-------===========-======*%@@@@@@@%##**##********##########################%%%%%%%%%%%%%%%%%%%%%%%#%%
----------========-======*%@@@@@@@%######**###*#####*###%%##***#############%%%%%%%%%%%%%%%%%%%%%%%%%
--------------====--=====*%@@@@@@%@@@@%#****####*###%+*%%####%#*##########%#%%%%%%%%%%%%%%%%%%%%%%%#%
------------===-----=====*#%@@@@@@@@@@@%@@%##***#%%%*#%%#####%%%#**+***#%%%%%%%%%%@%%%%%%%%%%%%%%%##%
--------------=------====+*%@@@@@@@@@@@%@%######%%#+#%%%%###%%%%%#*+*+=*%%%%%%%%%%%@@@%%%%%%%%%%%%%%%
--------------=-----=====+*@@@@@@@@@@@@%%##%#**#%#=#%%%%%%###%%%@#*+*+=*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------------------====+*@@@@@@@%@@@@%#%%#####%+*#%%%%%##%%%%%@%*+++=*%%%%%%%%%%%%%%%@%%%%%%%%%%%%%
---------------------====+*%@@@@@@%@@@@%%#%%###**=*###%#%%%%%%%@@@%#*++*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-------------=-------====++%@@@@@@%@@@@@%%%=. ... .+%##%%%%%%@%@@@@#+++*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
----------------------====*#@@@@@@%%@@@@%#-.       .###%%%%@@@@@@@@%++=#%%%%%%%%%###%%%*+====-------=
-----------------------===*#%@@@@@%#%@@%#**.       .*##%%%@@@@@@@@@@*+=#%%%%%%%#####%%%+---:---------
----------------------====+##@@@@@%##@@%%#=::   ..::*##%%%@@@@@@@@@@%+=##%%%##%#####%%%=*=::---::....
----------------------====+#%%%@@@%%%@@%*::--...::::*#%%%@@@@@@@@@@@@*+#######%#####%%#=-::.-:::.:-  
-----------------------===+*%%%%@@%@@@%=.. .  .-:- +*##@@@@@@@@@@@@@@%+#######%##*##%%#--:....:. ::  
-----------------------===+*%%%%@@%@@@%.    . ::...:+*#@@@@@@@@@@@@@@@%#######%#***#%%#::......  :.  
-----------------------===++#%#%%@@@@@@:...  :-:   :=*#@@@@@@@@@@@@@@@@#######%#***#%#*......:+: :   
------------------------===+####%@%%@@@*.:...---:  .+##%@@@@@@@@@@@@@@@@########***##*......:-#..-===
-----------------------====+#%%%%@%%@@@#*......:.:..=%%%@@@@@@@@@@@@@@@@%#######**##*.....::--*=.-=-=
------------------------===%#%%%%@%%@@@%%#...:---::.=#%%@@@@@@@@@@@@@@@@%%%#####**##-....:-.=-%=..   
------------------------===**%%%%@@%@@@@%@=....:::..-+#%@@@@@@@@@@@@@@%@@@%%%#######::..:-+*:@@*..   
------------------------===**%%@%@@%@@@@%@@+:::-===--*%@@@@@@@@@%%@@@@@@@@@@@%######::::-=+%%@%@**+++
------------------------===+#%%@@@@%@@@@@@@@@.......#@@@@@@@@@@%%@@%@@@@@@@@@%#####:.::--==*#@%*==---
------------------------===+#@%@@@@%@@@@%%%@%....*%@@@@@@@@@@@%%@%@@@@@@@@@@@@###+..:-----+*+**=:.   
--------------==--------===*#@@@@@@%@@@%%%@@#%@@%@@@%%%*--=#@%%%%%###%#+-::--==+:...:..---+##****+++*
------------=---=-------===+*@@@@@@%@%%%@%%%%%%#%@@@@%:    ..:=*#+:..  .   .    .....::-=+###########
--------------=-=--------==+*@@@@@@%##%@%%%@%%%*@@%@@%     .  ..........          . .....:=%%%%%%%###
------------=------------===*%@@@@@%#@@@@%@%%%%#%%%%%%+:...  ...     .......          .....-%%%%%%%%%
-----------=-=--==-------===*#@@@@@%%@@@%%%@%%%%%%%%#%#*##*-:..      ........::..        ..-%%%%%%%%%
-----------=======-------===*#@@@@@%%@%%%%%@@%%%%%#####**%@%%#*-.   ............::..   ..::+%%%%%%%%%
---------======-=-==----====**@@@@@*@%%%%%%@@%%#%####****#%%%#%%%#+:....................:-=%%%%%%%%%%
----------=========-=-=-====*#@@@@%@%%%%%%%@%%%#####******####%##%%%*:................:::=*%%%%%#####
--------===========-==--====+#@@@@#%%%%%%%%%%%%####**###*####*  .*%*    ................:-%##########
--------=============----===+#@@@%%%%%%%%%%%%%%***#*#%%###%###. .-%=        . .........::=@%#########
---------=============--====+*%@@%%%%%%%%%%%%%%#*+*#%%%%%%####.   -#*.            ....::+@@@%%%%%####
------=-==============-=====+#@@@%@%%%%%%%%%%%%@**##%%%%%%#*#%#     :*#=.      .  ....:+@@@@%%%%%%%%%
--------=====================*@@@%@%%%%%%%%%%%@@%##%%@%%%#**#%@%.      .:--..  ......:=@@@@@@%%%%%%%%
--------=-===================#%@@%@%%%%%%%%%%%%@@%%%%@@%%#*##%@@@=..        .  .....:+@@@@@@@%%%%%%%%
--------=====================##@@%@@%%%%%%%@@@@@@@%%%@@%#**##%@@@@@#-..         ..:+@@@@@@@@@%%%%%%%%
------=======================*#@@%@@%%%@%%%%%@@@@@@@@@@##*###%@@@@@@@@#=:........-%@@@@@@@@@%@%@%%%%%
-------======================*#@@@@@@%%%%%%%%@@@@@@@@@%#**###%@@@@@@@@@%@@%+=--=*@@@@@@@@@@@%@@%%%%%%
----=========================*#@@@@@@@%%%%%%@@@@@@@@@@##*#%#%@@@@@@@@@%%%@@@@@@@@@@@@@@@@@@@@%%%%%%%%
---=========================++#%@@@@@@%%@%@%@@@@@@@@@%#**#%#%@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@%%%%%%%%%
---=======================++++#%@@@@@@@%%%@%@@@@@@@@@#**##%#%@@@@@@@@%%%%%%@@@@@@@@@@@@@@@@@%%%%%%%%%
--=======================++++*#%%@@@@@@@@@@@@@@@@@@@%#**%%%##@@@@@@@%%%%%%%%@@@@@@@@@@@@@@@@%%%%%%%%%
-===-=========++==++++=+++++*%#%%@@@@%@@@@@@@@@@@@@%#**#%%%##@@@@@@%%%%%%%%%%@@@@@@@@@@@@@@%%%%%%%%%%
--===========++++=++++++++#@@@#@%@@@@@@@@@@@@@@@@@@%*##%%%%##@@@@@@%%%%%%%%%%%%%@@@@@@@@@%%%%%%%%%%%%
---===========++++++++++%@@@@@#%%@@%@@@@@@@@@@@@@@%####%%%###%@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--============+++++++#@@@@@@@@#%@@@#@@@@@@@@@@@@@@%###%%%%###%@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-============+++++*%@@@@@@@%%%%#@@%%%#@@@@@@@@@@@%###%%%%%####@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-============+++%%@@@@@@%%%%%%%#@@%@%%%%%%@@@@@@%###%%%%%%###*@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-===========+*%@@@@@@%%%%%%%%%%@@@@@#%#%#@@@@%@%%##%%%%%%####*%@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-=========+#%@@@@@@@%%%%%%%%%%%@@@%%%%%%%%%@@%@%###%%%#%#####*%@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-======+*%@@@@@@@%%%%%%%%%#####@@@%%%%%@@@@@@@%%##%%%%%%###%%*#@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-====+#%@@@@@@%%%%%%%%%%%%%#%#%@@@@%%%%@@@@@@%%%%%@%%%%####%%##@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-==*%%@@@@@@@%%%%%%#%%%%##%%###@@@@@%%%%@@@@@%#%%%%%%%%%####%##@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%@@@@@@@%%%%%%%%%%#%##%######@@@@@@%%%%@@@%%%%%%%%%#%%%%%%%##@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-@@@@%@%%%%%%%%%%%%#%%%########@@@@@@@%%%%@%%%@@@%%%######%%%##%@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%@%@%%%%#%%#%#%##%%###########%@@@@@@@%%%%%%%%%%%@@%%*%####%#%@@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%#%###%###%%#%#########@@@@@@@@@%%%%%##%%%%%%%@@%*###%%%%@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%##%####%#%%%%###########@@@@@@@@@@%#%%%%%%%%@%#%#%@%#*###%@@@@@@@@%%%%%%%%%%%%%%%%%%%#%%%%%%%%
-%#%%#%%###%%%%%###############@@@@@@@@@@%#%%##%%%@%%%###%%@@%+#%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#########%%%%#################@@@@@@@@@%##%%###%%@@%#######%#@@%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%#%%%%
-##############################@@@@@@@@%###%%##%%%@@%%#%#%####%%@@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#######%%######################@@@@@@@%###%%##%%%@@%%#%%####%#%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-###############################@@@@@@%%##%%%##%%%@@%##%%#####%%@@@@@@@@%%%%%%%%%%%%%%#%%%%%%%##%%%%%
-########*#####################%@@@@@%%%%#%#%#%%%%%%%###%#####%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%###%%%%%%
-##%#########*####*############%@@@@@%%%#%%%%%%%%%%###########%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%###%%#%%%
-###########*###########*######@@@@@%%%%%%@%%%%##%%##########%@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%##%%%%##%
-######*#**####################@@@@%%##%%%@%@%%%%######*####%@@@@@@@@@%%%%%%%%%%%%%%%%#%%%%%#####%%%%
-**##**#*###*################*%@@@@%%#%%%%@%@@@@@%%%%%%%%%#%@@%@@@@@@@%%%%%%%%%%%%%%%%%%%%%####%#####
-**##**###*###**##############@@@@@@@@@@*+@@@@@@@@%@@%%%%%@@%%%@@@@@@@%%%%%%%%%%%##%%%%#%%%###%%%###%
-#****#*****##****##*###*#####@@@@@@@@@@%@@@@@@@@@%@@@@@@@@%%%@@@@@@@%%%%%%%%%%%%%%%##%%%%%#########%
-***#********#*#*#*###########@@@@@@@@@@@@@@@@@@@@@%@@@@@@%%%%%@@@@@@@%%%%%%%%%%%%#%%#%%%%%##%###%###
-*******+***######**##########@@@@@@@@@@@@@@@@@@@@@%%%@@@@@@@@@@@@@@@@%%%%%%%%%%%%#%%##%%%####%######
-#******#*#*########*#########@@@@@@@@@@@@@@@@@@@@@%%%@@@@@@@@@@@@@@@@@%%%%%%%%%%#%%%##%#%#%#####%###
-*****#**##########*##########@@@@@@@@@@@@@@@@@@@@@%%@@@@@@@@@@@@@@@@@@%%%%%%%%%%%#%###%%%###*###%###
-***##*##*####*####*##########@@@@@@@@@@@@@@@@@@@@@@%%%@@@@@@@@@@%@@@@@%%%%%%%%%%#%####%%##########%#
-*#**#*#*#*#####*#*###########@@@@@@@@@@@@@@@@@@@@@@%%@@@@@@@@@@@@@@@@@@%%%%%%%%%%######%###########%
-******#***##**###*#*#########@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@%%%%%%%%%%######%############
-********#**#***###*##########@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%%%%%#%%###%#############%
-*************##*##############@@@@@@@@@@@@@@@@@@@@@@%@@@@@@@@@@%@@@@@@@@%%%%%%%#######%#########%###
-******##***#****##*###########@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@@@@@@%%%%%%%###%#%#%#############
-********##*###*****#*##########@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%%%###%####%########*####
-"""
-                admin = """::::::.-=+====--=++++=----==+**++=====-:::::---==+++++++++++++=-:::-=++==---:::------=++**+==+==-::-
-:::::..:====--:::::-=====----::::----:::::..::::::-=++==-==+=----==---=++=-::::-----===+++++++++=-=+
-:::::.:--::-:::-===++++++===---::::--:::--::::....:::::------========---+++++=-----=++****++=++++---
-:::::.:-=+=:::::--=+--=++++++=-::::::::-======--::::----------:------------:::::::-:::-------------:
-:::::..--===--:.::..:-==++========-:::--===--------:::::--=--::---::::::::::---==----::::::::-------
-:::::..-=+++++==+=-::::::..:----:::.:---::::-===---:.::----::::---::::...:----=======------:::------
-:::::..-=---=====-:::---=-:-::---:..:::::----====-::-----::-=-=======--:::::---=-=++=======---------
-:::::..-==++==--....:-:::::.::::...::-=======++=-:..::::---:::::::::-----::::::..:-======--======---
-:::-:..-=+=-----:::--------:.....::-============-:::------:..--::--=====++======::::::::::::==--::..
-::::...-==-:...:-===-:........:::::--===----===-:..:-=======-:...::-==----====+=--::----==:-=---===-
-::::..:---:.:::.:-=--:...........::--==+--===--..-=++++==-:::....:::---=======--:::::-----:::::----:
-:::....:-=====:..:---:.....::::---===-=+--=+==::=+=:.......::---==+=========-==-::::::-----===-:::::
-::....:-==-==---:-===+++-.:::::--=+++==--:-=+=.........:::---===+++=====+++=-:.::--=++++===-----::::
-:.....:-------:..::::............::-:::::-:::........::--==+++++++====++++=--:.:::-=++=--:::::::::::
-......:-=-:..::.......::--::............:::::...:....:-:...:--=====---=++==--::-==-:-=+++==:....::::
-......:-...:....:--========+=-:..::.....:::::::==:...:.......:---==+=--:--:-=+*+++=:::-====-:::::::-
-.....:-==-:.....:--=+++==++=---==--:::.:::--:....-=---.......:-::-::-::-==-======+====--===++*+=:::-
-:::.::-=+++=:..:::::-=+===+++=====--:......:::..:-=====-:-:...::=+++-:::-----==+=----:.:-=+====-::::
-::::.::-==++=:..........=+===============-::::=+++==++++++-::-.:.....:-==-:::::-:-=----:.......:::::
-::::..::=====--:::--:.:...-=+=-:::::--==--:....:-====-::::---:::::.::--==---::::-:::::::.....:::::::
-:::...:-+=++++++++=+=::..........:=--::.....:-==--:::::-===++==:...:-==--:.:::::::-::::::::.::::::::
-.....::-=-:::-----=-:..:::--=+-.:::-----:...:::....:--=++++===:.:..:::::-==-::::::-::::::::::-==++++
-.....::----===+++=-:::..:----=:.-=::-==-:..:=+=::--:::--=+++=-==-:..::--:--:---===++++===-::---::-=+
-.....::-=+++++++==:....:---::::..:..-----.:*#*+:.....:-==++==---::::::--:::::-:::----=++=-:::.::::::
-.....:-=+++++====:..:..:::==:--..:--.-==-=*##*+======++++++=::-:--:-=+++-..:-==:.:::-====----:::.:::
-.....:-=+++++=+=---..:::---:::.......:.:-+***+++++++++++++=-..:-===---=-...:---::--=========-----+++
-.....::=+++=----=-:-==--:::.........::--+**+=+++++++++++++=:....---------:......::::-------======---
-.....:-====-.:::=+++=-::..............:-+++====+=:...-==--:.....-=========---.....:::-==-::::-------
-.....::--::::-=-..-++===-:............=+--====+*+=-=---:.....:-==+======--:...........::::---=+++===
-.....::::--=++-:...:-==-...........:-+*+----=++##=--=-=--=:.-==+===---:...:::...:::.::----======+++=
-.....::-=++=-=--...::--=-::......-===+++=++++*###*++++=-:..===-...........:::-:--=========--=====-:-
-.....:---------==-:-=++=+++=:..:=*#*===++++*%%%%%%%%#+==-..::--=++-:..:::-------===========++==---==
-.....--===----::::::-===+++=:.:=++-=**==-#%+###%@@%%###*==++++**###=.::::---:-=++===========++++=-::
-.....---::-----:..:=-:::....:-==+*:=**%+---##*#%%%%##***+=++***####-.::-==---==+++======--======-::.
-....:---::-=----:...........-+**##++*%%=-+****++##***+==+*########=..:::-:--=+================-:::--
-....:-====-..:-:..........:--==*#**--+=:+****++%#+*****+=+++*####-.........::-::-============-:..:--
-....:---::::::.......:---===-=++*++*#*==+****#*=-+******++##%#*+...::.......::-===---:...:-===--::::
-....---:..:::.....:------==-:--==+=+*+==+*++%@%%@*++*****#####=....:::.........:----:::::::..:--:...
-....----:-:.......--====-------==-:**++*#%%###%%%%#***#*##****-....................:--==--:.....::::
-....--=+=--:......:=--=++=---====-=#@@@%##*=-=====+#%###****=--::.......................:::..:--:---
-....--+++++-:...:::.:::-++--=++++*##***+*##*########%%%#***+..:=----:..............:::..::...-------
-...:--=+++++==:...:--...:--=*******########%%%%%##**%%%%#########*++=--:.:.........-====-....:::-=:.
-...:==--++++=-...........-=+++*#%%#***********##%%###%%%###%%%%%%%%%#**----::::.....:::::.:-:.::::..
-:::-=----=---::::........-===+*%@@@@%%%%#########%%#%%%%%#%%@@@@%%%%%%%##*=:...............:-::::...
----::-=++++++==-::...-=.:-==+**###%%%%%%@%%%@@%%%%@@@%%%%%%%@@@@@@%%%%%%%%#=...:::..........::--:...
---:::::.:=+*++==---=++-:-=++++**+*#%@%%%%###%@%%%%#####%%%%@@@@@@@@%%%%%%%%#=::.............:::::::-
-:::........:-=++++++==--+**++**#%%@@@@%%%%%%%%%%#####%%%%@@@@@@@@@@@@@%%%%%#*+-...........:::---::..
-::.........:::===--::::-+*+==**#%@@@@@@@@@@%%%%%%%%%%%%%%@@@@@@@@@@@@@@%%%%##+-:--:.......::-::::...
-..........::::---::-----=+*++*****#%@@@@@@%%@@@%%%%%%%%%@@@@@@@@@@@%%%%%%%%%##=:--.........::.......
-............:--===----::-+*###*++*#%%#%@@##%%@%%%%%%%%@@@@@@@@@@@@%%%%%%%%%%#%*=::..................
-..........:::::-++=-...:-=+******#%#*%@@@@%%%###%@@@@@@@@@@@@@@@@%%%%%%%%###%%#=:................::-
--:.::-=--:..:--:=-::....:=+++**#%%@%%%%%%%%%@@%@@@@@@@@@@@@@@@@@%%%%%%%%###%%##+:.....--:::::...::-=
-+=-:.::-====---=-:--......-+*****##*##%%%@@@@@@@@@@@@@@@@@@@@@@%##########%%%##*-....:::::::::..::--
-*+=-----:::=*+==:..........-+*##%%%%@@@@@@@@@@@@@@@@@@@@@@@@%%%%#*########%%%#%+:...........::-::...
-*##*+======+=--=+=-...:.....-=*#%%@@@@@@@@@@@@@@@@@@@@@@@@@%%%###########%%%%%%*-.....::.....:::::..
-::-*#####%%#+--=--:........::-=*%%%@@@@@@@@@@@@@@@@@@@@@@@%%#############%%%%%%*-................:::
-...-=+****++=:...---:::-==+++=++*#%@@@@@@@@@@@@@@@@@@@@@@@%###############%%%%#+:............------:
-...-=+*++=--:.......:--=====+++**##%%@@@@@@@@@@@@@@@@@@@%##########%%%%%%###%%#+:........::::------.
-...-=+++=:::.......:::-======*#%%%%%#%%@@@@@@@@@@@@@@@@%##*#%%%%%%%%%%%%%%#####+:.....:::::::..-==..
-..--=+=----:...:....:-=====+*%@@@@@@%%%@@@@@@@@@@@@@@@%####%@@@@%%%%%%%%%%####*=:.......--::::......
-..--==--====..:::.:-==++====*%@@@@@@@@%%%%@@@@@@@@@@@@%%%%%%%%%@%%%%%%%%%#####+=-.......::..:::....:
---=-=-----:........:-======*%%@@@@@@@@@@@@@@@@@@@@@@@@%%%%%%%%@@%%%%%%%%%%%%%#+=:.......::----------
---==+=----....::-:....=++++#@@@@@@@@@@@@@@@@@@@@@@@@@@%%%%%%%@@@%%%%%%%%%%%%%#+-:........-======----
-:-===-.....-====-:....:=++*%@@@@@@@@@@@@@@@@@@@@@@%%%%%%%%@@@@@@@@@@@@@@@@@@%*=-:.......::---::::---
-..-==:::--::=++=-::...:-==+#%@@@@@@@@@@@@@@@@@@@@%%%%%%@@@@@@@@@@@@@@@@@@@@%#*+=---::::---====--:...
-..--=:---===++++=-...::::-+*#@@@@@@@@@@@@@@@@@@@@%%#%%%%%@@@@@@@@@@@@@@@%%%#**+++=--::..............
-..===--++++=-:-===:....::-=+*#%@@@@@@@@@@@@@@@@@@%%%%%%%%%%@@@@@@@@@@@@%%###*+-:....................
-..-===++++=-::--:::.....:---+*##%@@@@@@@@@@@@@@@@@@%%%%%%@@@@@@@@@@@@%#*++=+==-:....................
-.:-==---=-----:---+=-::.-=+=+++*#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%###*+++====-:.....................
-.:-==-==-::-======+=---===-===++*#%%@@@@@@@@@@@@@@@@@@@@@@@@%%%%##*++++++==-:.......................
-.:-==++=---=---=-------:--=+++++==++*###%%%%%%%%%%%%%%%%%%####****++++===---........................
-.:-----------===+====--:..........:--=+****###########*******++++====--::...........................
-.=--:-==+==-:.......................:::-===++++++*+++++++++=====---::...............................
-.-==-..................................:::-------------:::::........................................
-................................................::..................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-....................................................................................................
-...........................................................................=+++++++++++++++++++=....
-..........................................................................-#####################=...
-"""
                 if (a == "Дима") or (a == "дима"):
-                    print(dima)
+                    print(prikoli.dima)
                 elif (a == "Стас") or (a == "стас"):
-                    print(admin)
+                    print(prikoli.admin)
                 elif (a == "Алена") or (a == "алена") or (a == "Алёна") or (a == "алёна"):
-                    print(alena)
+                    print(prikoli.alena)
                 elif (a == "Эля") or (a == "эля") or (a == "Элина") or (a == "элина"):
-                    print(elia)
+                    print(prikoli.elia)
                 else:
                     print("У вас еще всё более чем отлично!, попробуйте кого-нибудь другого исправить...")
         if auth_bool == True:
-            ask_to_return = False
+            to_exit = False
             while True:
 
                 #допытываем от пользователя номер предмета и тесты
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
+                    #print("iamhere")
+                    if list_of_preds_and_tests == -1:
+                        to_exit=True
+                        break
+                    if list_of_preds_and_tests == False:
+                        print("\nБудьте внимательнее! Пробуем ещё раз...")
+                        continue
                 except ValueError:
                     print("\nБудьте внимательнее! Пробуем ещё раз...")
                     continue
-                
-                if list_of_preds_and_tests == -1:
-                    ask_to_return = True
-                    break
-                if list_of_preds_and_tests == False:
-                    print("\nБудьте внимательнее! Пробуем ещё раз...")
-                    continue
-                
                 try:
                     num_pred_r = list_of_preds_and_tests[0]
                     num_testing_r = list_of_preds_and_tests[1]
@@ -1028,10 +706,9 @@ def main():
                 elif ("Н" in a): break
                 else: print("Хорошо, пробуем ещё раз...")
 
-            if ask_to_return == True:
+            if to_exit:
                 print("Возвращаюсь...")
                 continue
-
             #несколько нужных переменных
             answers_complete = False
             num_of_error = 0
@@ -1117,16 +794,19 @@ def main():
 
                     c = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
                     num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
-
-                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
+                    
+                    time_start_test = datetime.datetime.now()
+                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>1.ЗАХОЖУ НА ТЕСТ {num_testing+1} \"{name_of_test}\" ({num_non_smisl_of_test})")
+                    
                     
                     if answers_complete == False:
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>1.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>2.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
+                        
                         time_before = datetime.datetime.now()
-                        select_question("1")
-                        for i in range(30):
-                            check_first_and_next()
-                            time.sleep(1)
+        
+                        if check_all_first_cases_and_verify():
+                            pass
+
                         time_after = datetime.datetime.now()
                         time_elapsed = str(time_after-time_before)
                         for i in range(len(time_elapsed)):
@@ -1135,27 +815,12 @@ def main():
                                 if time_elapsed[0] == "0":
                                     time_elapsed = time_elapsed[1]
                                 break
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Заняло {(time_elapsed)} секунд")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все вопросы протыканы! Заняло {(time_elapsed)} секунд")
                         
                         #Пятерочка
-                        select_question("1")
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>2.ПРОРЕШИВАЮ ОТВЕТЫ ПЯТЕРОЧКИ ПО ТЕСТУ {num_testing + 1}:")
-                        crytical_error = False
-                        for i in range(30):
-                            space = ""
-                            if (i+1) < 10: space = " "
-                            
-                            time.sleep(1)
-                            var1 = go_to_check_answer5()
-                            
-                            if var1 == False:
-                                crytical_error = True
-                                break
-                            time.sleep(1)
-                            new_list = check_some_case_and_next(var1)
-                            
-                            print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Вопрос {i+1}{space}: {new_list}")
-                            time.sleep(0.250)
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>3.ПРОРЕШИВАЮ ОТВЕТЫ ПЯТЕРОЧКИ ПО ТЕСТУ {num_testing + 1}:")
+                        crytical_error = answer_all_questions()
+
 
                         #Завершение
                         if crytical_error == True:
@@ -1164,38 +829,76 @@ def main():
                             answers_complete = False                       
                             continue
 
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВСЕ ОТВЕТЫ УСПЕШНО ЗАПИСАНЫ")        
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>4.ВСЕ ОТВЕТЫ УСПЕШНО ЗАПИСАНЫ")        
                         answers_complete=True
-    
                     else:
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВНИМАНИЕ, ТЕСТ УЖЕ ПРОРЕШАН, НЕ ПРОРЕШИВАЮ ЕГО ЕЩЕ РАЗ!!!")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>4.ВНИМАНИЕ, ТЕСТ УЖЕ ПРОРЕШАН, НЕ ПРОРЕШИВАЮ ЕГО ЕЩЕ РАЗ!!!")
 
                     answers_complete=True
 
                     #ошибки
                     num_of_mistakes = random.randint(num_of_mistakes_ot, num_of_mistakes_do)
                     array_error = [['0', '0', '0', '0', '0'], ['U', 'U', 'U', 'U', 'U']]
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Делаю ошибки — {num_of_mistakes}...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Делаю ошибки — {num_of_mistakes}...")
                     select_question(1)
                     for i in range(num_of_mistakes):
                         check_some_case_and_next(array_error)
-                
+
+
+
+                    
+
+
+
                     #готовися ждать
                     time_to_wait = random.randint(time_to_wait_ot, time_to_wait_do) 
+                    #time_to_wait = 1800
                     interval = datetime.timedelta(seconds=time_to_wait)
                     the_end = datetime.datetime.now() + interval
                     time_to_wait_min = f"{time_to_wait//60} минут {time_to_wait % 60} секунд"
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Буду ждать {time_to_wait_min} до {the_end.strftime("%H:%M:%S")}...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Готово! Буду ждать {time_to_wait_min} до {the_end.strftime("%H:%M:%S")}...")
                     time.sleep(time_to_wait)
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
                     
                     #auth(silence=True)
-                    #time.sleep(4)
-                    
-                    
+                    #time.sleep(5)
                     #конец
-                    close_test()
+                    
+                    
+                    
+                    res_exit = close_test()
+                    
+                    print(f"""
+-----------------------------------------------------
+{res_exit.text}
+-----------------------------------------------------
+""")
+                    
+                    
                     procent_solved = "Error" 
+
+                    """def get_result(mist=0):
+                        mist += 1
+                        if mist <= 3:
+                            try:    
+                                results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
+                                procent_solved = "ERROR"
+                                for j in range(len(results_array)-1): #j += 1
+                                    j += 1
+                                    if str(results_array[j][0].text).strip() in str(name_of_test):
+                                        procent_solved = str(results_array[j][1].text).strip()
+                                        return procent_solved
+                                    print("Error123, try again") 
+                                    time.sleep(5)
+                                    #auth(silence=True) 
+                                    return get_result(mist=mist)            
+                            except Exception :
+                                print("Error123, try again") 
+                                time.sleep(5)
+                                #auth(silence=True) 
+                                return get_result(mist=mist) 
+                        else:
+                            return "Error" """
                     
                     def get_result(num_pred_r, name_of_test, num_of_mist=0):
                         try:
@@ -1223,18 +926,28 @@ def main():
                             print("Error456, try again") 
                             return False
                     
-                    procent_solved = get_result(num_pred_r, name_of_test)
-                    
-                    print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>4.Тест {num_testing+1} \"{str(name_of_test)[4:]}\"")
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>завершён на {procent_solved}% (должно быть {round(((30-num_of_mistakes)/30)*100, 2)}%)")
+                    procent_solved = get_result() 
+
+                        
+                            
+                            
+                            
+                            #print(f"SOVPADENIE NAIDENO: {str(results_array[j][0].text).strip()}  —>  {str(test_name_list[i].text).strip()}")
+                            #if int(str(results_array[j][1].text).strip()) >= new_list_of_persent[0][i]: 
+                            #    new_list_of_persent[0][i] = int(str(results_array[j][1].text).strip())
+                            #    new_list_of_persent[1][i] = str(results_array[j][0].text).strip()
+                     
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>5.Тест {num_testing+1} \"{name_of_test}\" завершён на {procent_solved}% (вроде {round(((30-num_of_mistakes)/30)*100, 2)}%)")
+
                     answers_complete = False
                     num_testing += 1
-                    #num_of_error = 0
-                    result_solved_test.append([name_of_pred, str(name_of_test)[4:], num_non_smisl_of_test, procent_solved])
-                    if (num_testing - do_kakogo_testa_vkluchitelno) == 1:
+                    num_of_error = 0
+                    result_solved_test.append([name_of_pred, name_of_test, num_non_smisl_of_test, procent_solved])
+                    
+                    if num_testing > do_kakogo_testa_vkluchitelno:
                         pass
                     else:
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——> Жду 10 секунд и приступаю к следующему...")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————> Жду 10 секунд и приступаю к следующему...")
                         time.sleep(10)
 
             
@@ -1242,14 +955,13 @@ def main():
 
 
             if len(result_solved_test) != 0:
-                print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все указанные тесты прорешаны:")
+                print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>6.Все указанные тесты прорешаны:")
                 for i in range(len(result_solved_test)):
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>{i+1}. {result_solved_test[i][0]} — {result_solved_test[i][1]} ({result_solved_test[i][2]}) — на {result_solved_test[i][3]}%")
-                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>{i}. {result_solved_test[i][0]} — {result_solved_test[i][1]} ({result_solved_test[i][2]}) — на {result_solved_test[i][3]}%")
+                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
             else:
                 print("\n---------------------------------------------------------------\nE—————————>6.Ни один тест не был прорешан :(")
-                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
-            print("\n\n")
+                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
             del result_solved_test[:]
 
 
