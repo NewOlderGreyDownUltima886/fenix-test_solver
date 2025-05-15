@@ -157,7 +157,8 @@ def get_pass():
 # возвращает тру\фолс
 def auth(login1="", password1="", silence=False):
     if set_new_session_id():
-        print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
+        if silence == False:
+            print(f"Session ID({SessionId}) установлен, пытаюсь войти...")
         if (login1 == "") and (password1 == ""):
             login1 = get_login()
             password1 = get_pass()
@@ -386,7 +387,8 @@ def answer_all_questions():
 
         new_list = check_some_case_and_next(var1)
         
-        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Вопрос {i+1}{space}: {new_list}")
+        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Вопрос {i+1}{space}: {new_list}")
+                            
     return False
 
 #check_results_of_tests_by_num_of_pred
@@ -537,19 +539,6 @@ def admin():
             continue
     
 
-"""
-0 - auth
-1 - enter_current_test
-2 - select_question   
-3 - check_first_and_next
-4 - check_first_and_return_main_menu
-5 - go_to_check_answer5
-6 - close_test
-7 - close_test_70_error
-10 - cls
-8 - check_some_case_and_next(go_to_check_answer5())
-"""
-
 auth_bool = False
 def main():
     auth_bool = False
@@ -557,6 +546,8 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
+
+    ################################проверка на апдейт и установка
     print("Добро пожаловать!!! Проверяю обновления...")
     process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.DEVNULL, text=True, shell=True)
     process = subprocess.Popen(['git init'], stdout=subprocess.DEVNULL, text=True, shell=True)
@@ -569,21 +560,7 @@ def main():
         elif "Updating" in line:
             print("\nОбновление установлено успешно, перезапусти меня!!!\n(введи \"test\")\n")
             quit()
-            
-            #проверка на апдейт и установка
-    os.system('cd ~/fenix-test_solver')
-    os.system('git init')
-    os.system('git stash')
-    process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
-    for line in iter(process.stdout.readline, ''):
-        if "Already up to date" in line:
-            print(line)
-            break
-        elif "Updating" in line:
-            print("Обновление установлено успешно, перезапусти меня!!!\n(введи \"test\")")
-            quit()
-
-        ###############################
+    ##############################################################
     
     while True:
 
@@ -678,14 +655,14 @@ def main():
                 #допытываем от пользователя номер предмета и тесты
                 try:
                     list_of_preds_and_tests = chose_some_test_from_list()
-                    #print("iamhere")
-                    if list_of_preds_and_tests == -1:
-                        to_exit=True
-                        break
-                    if list_of_preds_and_tests == False:
-                        print("\nБудьте внимательнее! Пробуем ещё раз...")
-                        continue
                 except ValueError:
+                    print("\nБудьте внимательнее! Пробуем ещё раз...")
+                    continue
+                
+                if list_of_preds_and_tests == -1:
+                    to_exit = True
+                    break
+                if list_of_preds_and_tests == False:
                     print("\nБудьте внимательнее! Пробуем ещё раз...")
                     continue
                 try:
@@ -807,11 +784,11 @@ def main():
                     num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
                     
                     time_start_test = datetime.datetime.now()
-                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>1.ЗАХОЖУ НА ТЕСТ {num_testing+1} \"{name_of_test}\" ({num_non_smisl_of_test})")
+                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
                     
                     
                     if answers_complete == False:
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>2.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>1.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
                         
                         time_before = datetime.datetime.now()
         
@@ -826,10 +803,10 @@ def main():
                                 if time_elapsed[0] == "0":
                                     time_elapsed = time_elapsed[1]
                                 break
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все вопросы протыканы! Заняло {(time_elapsed)} секунд")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Все вопросы протыканы! Заняло {(time_elapsed)} секунд")
                         
                         #Пятерочка
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>3.ПРОРЕШИВАЮ ОТВЕТЫ ПЯТЕРОЧКИ ПО ТЕСТУ {num_testing + 1}:")
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>2.ПРОРЕШИВАЮ ОТВЕТЫ ПЯТЕРОЧКИ ПО ТЕСТУ {num_testing + 1}:")
                         crytical_error = answer_all_questions()
 
 
@@ -840,17 +817,17 @@ def main():
                             answers_complete = False                       
                             continue
 
-                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>4.ВСЕ ОТВЕТЫ УСПЕШНО ЗАПИСАНЫ")        
+                        print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВСЕ ОТВЕТЫ УСПЕШНО ЗАПИСАНЫ")        
                         answers_complete=True
                     else:
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>4.ВНИМАНИЕ, ТЕСТ УЖЕ ПРОРЕШАН, НЕ ПРОРЕШИВАЮ ЕГО ЕЩЕ РАЗ!!!")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>3.ВНИМАНИЕ, ТЕСТ УЖЕ ПРОРЕШАН, НЕ ПРОРЕШИВАЮ ЕГО ЕЩЕ РАЗ!!!")
 
                     answers_complete=True
 
                     #ошибки
                     num_of_mistakes = random.randint(num_of_mistakes_ot, num_of_mistakes_do)
                     array_error = [['0', '0', '0', '0', '0'], ['U', 'U', 'U', 'U', 'U']]
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Делаю ошибки — {num_of_mistakes}...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Делаю ошибки — {num_of_mistakes}...")
                     select_question(1)
                     for i in range(num_of_mistakes):
                         check_some_case_and_next(array_error)
@@ -867,9 +844,9 @@ def main():
                     interval = datetime.timedelta(seconds=time_to_wait)
                     the_end = datetime.datetime.now() + interval
                     time_to_wait_min = f"{time_to_wait//60} минут {time_to_wait % 60} секунд"
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Готово! Буду ждать {time_to_wait_min} до {the_end.strftime("%H:%M:%S")}...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Буду ждать {time_to_wait_min} до {the_end.strftime("%H:%M:%S")}...")
                     time.sleep(time_to_wait)
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Время вышло! Заканчиваю тестирование...")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
                     
                     #auth(silence=True)
                     #time.sleep(5)
@@ -948,17 +925,18 @@ def main():
                             #    new_list_of_persent[0][i] = int(str(results_array[j][1].text).strip())
                             #    new_list_of_persent[1][i] = str(results_array[j][0].text).strip()
                      
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>5.Тест {num_testing+1} \"{name_of_test}\" завершён на {procent_solved}% (вроде {round(((30-num_of_mistakes)/30)*100, 2)}%)")
+                    print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>4.Тест {num_testing+1} \"{str(name_of_test)[4:]}\" завершён на {procent_solved}% (должно быть {round(((30-num_of_mistakes)/30)*100, 2)}%)")
 
+                    
                     answers_complete = False
                     num_testing += 1
                     num_of_error = 0
-                    result_solved_test.append([name_of_pred, name_of_test, num_non_smisl_of_test, procent_solved])
+                    result_solved_test.append([name_of_pred, str(name_of_test)[4:], num_non_smisl_of_test, procent_solved])
                     
                     if num_testing > do_kakogo_testa_vkluchitelno:
                         pass
                     else:
-                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————> Жду 10 секунд и приступаю к следующему...")
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——> Жду 10 секунд и приступаю к следующему...")
                         time.sleep(10)
 
             
@@ -966,13 +944,14 @@ def main():
 
 
             if len(result_solved_test) != 0:
-                print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:——————————>6.Все указанные тесты прорешаны:")
+                print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все указанные тесты прорешаны:")
                 for i in range(len(result_solved_test)):
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:—————>{i}. {result_solved_test[i][0]} — {result_solved_test[i][1]} ({result_solved_test[i][2]}) — на {result_solved_test[i][3]}%")
-                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
+                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>{i+1}. {result_solved_test[i][0]} — {result_solved_test[i][1]} ({result_solved_test[i][2]}) — на {result_solved_test[i][3]}%")
+                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
             else:
                 print("\n---------------------------------------------------------------\nE—————————>6.Ни один тест не был прорешан :(")
-                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
+                print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
+            print("\n\n")
             del result_solved_test[:]
 
 
