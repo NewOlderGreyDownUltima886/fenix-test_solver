@@ -95,9 +95,9 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
 
     if test_na_diskonekt_izza_istekshey_sessii(a):
         if silens==False:
-            print("\n\n\n-----------------------------------------------------------------------------------------------1")
+            print("\n\n\n----------------------------------------------------------------------------------1")
             print(a.status_code)
-            print("-----------------------------------------------------------------------------------------------2")
+            print("----------------------------------------------------------------------------------2")
             print(a.text)
         return a
     else:
@@ -176,7 +176,7 @@ def auth(login1="", password1="", silence=False):
         b = soup.select('span[id="ctl00_MainContent_Label1"]')
         if len(b) > 0:
             if "Здравствуйте" in b[0].text:
-                #print("\n---------------------------------------------------------------")
+                #print("\n--------------------------------------------------")
                 if silence == False:
                     print(f'\n{str(b[0].text)[:-33]}!')
                 return True
@@ -211,7 +211,7 @@ def chose_some_test_from_list():
     soup = BeautifulSoup(a.text, 'html.parser')
     pred_list = soup.select('table[id="ctl00_MainContent_ASPxPopupControl1_ASPxListBox1_LBT"] > tr > td ')
     #Выводим его и спрашиваем предмет
-    print("\n---------------------------------------------------------------\nДоступные вам тесты:")
+    print("\n--------------------------------------------------\nДоступные вам тесты:")
     for i in range(len(pred_list)):
         num = str(i+1)
         space = ""
@@ -565,7 +565,7 @@ def main():
     while True:
 
         print("""
----------------------------------------------------------------
+--------------------------------------------------
 Выберите действие:
 1. Решить тесты
 2. Изменить параметы — ошибки и время
@@ -696,11 +696,12 @@ def main():
 
             if to_exit:
                 print("Возвращаюсь...")
+                auth_bool = False
                 continue
+
+
             #несколько нужных переменных
             answers_complete = False
-            num_of_error = 0
-            time_start_test = 0
 
             num_testing = num_testing_r
             do_kakogo_testa_vkluchitelno = do_kakogo_testa_vkluchitelno_r
@@ -719,7 +720,7 @@ def main():
                 b1 = soup.select('script[src^="/eport/WebResource.axd"] ~ script[type="text/javascript"]')
                 for i in range(len(b1)): 
                     if "Исчерпан суточный лимит выполнения теста" in b1[i].text:
-                        print(f'\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"Исчерпан суточный лимит", тест {num_testing+1} по предмету \"{name_pred_r}\" (либо его не существует)!!!')
+                        print(f'\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"Исчерпан суточный лимит", тест {num_testing+1} по предмету \"{name_pred_r}\" (либо его не существует)!!!')
                         if (num_testing+1) <= do_kakogo_testa_vkluchitelno: 
                             print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую решить следующий тест ({num_testing+2})...')
                         num_testing += 1
@@ -732,7 +733,7 @@ def main():
                 b2 = soup.select('label[id="ctl00_MainContent_ASPxLabel10"]')
                 for i in range(len(b2)): 
                     if "Просмотр ответов заданий возможен только при выполнении не менее 70% теста" in b2[i].text:
-                        print(f'\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"Просмотр ответов заданий возможен только при выполнении не менее 70%", тест {num_testing+1} по предмету \"{name_pred_r}\", завершаю его!')
+                        print(f'\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>"Просмотр ответов заданий возможен только при выполнении не менее 70%", тест {num_testing+1} по предмету \"{name_pred_r}\", завершаю его!')
                         print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую еще раз решить тест {num_testing+1}...')
                         answers_complete = False                       
                         proverka = True
@@ -743,7 +744,7 @@ def main():
                 b3 = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
                 for i in range(len(b3)): 
                     if "Всего правильных ответов" in b3[i].text:
-                        print(f'\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Тест {num_testing+1} уже был ранее прорешан на 70%+ по предмету \"{name_pred_r}\", завершаю его!')
+                        print(f'\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Тест {num_testing+1} уже был ранее прорешан на 70%+ по предмету \"{name_pred_r}\", завершаю его!')
                         if (num_testing+1) <= do_kakogo_testa_vkluchitelno: 
                             print(f'{datetime.datetime.now().strftime("%H:%M:%S")}:——>Пробую решить следующий тест ({num_testing+2})...')
                         num_testing += 1
@@ -784,7 +785,7 @@ def main():
                     num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
                     
                     time_start_test = datetime.datetime.now()
-                    print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
+                    print(f"\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
                     
                     
                     if answers_complete == False:
@@ -944,12 +945,12 @@ def main():
 
 
             if len(result_solved_test) != 0:
-                print(f"\n---------------------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все указанные тесты прорешаны:")
+                print(f"\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>Все указанные тесты прорешаны:")
                 for i in range(len(result_solved_test)):
                     print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>{i+1}. {result_solved_test[i][0]} — {result_solved_test[i][1]} ({result_solved_test[i][2]}) — на {result_solved_test[i][3]}%")
                 print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
             else:
-                print("\n---------------------------------------------------------------\nE—————————>6.Ни один тест не был прорешан :(")
+                print("\n--------------------------------------------------\nE—————————>6.Ни один тест не был прорешан :(")
                 print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Сколько не получилось прорешать указанных тестов: {errored_solved_test}")
             print("\n\n")
             del result_solved_test[:]
