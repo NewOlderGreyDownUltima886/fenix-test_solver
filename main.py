@@ -603,7 +603,7 @@ def main():
             print("Спасибо! Записал в файл...")
             continue
         elif chose == "4":
-            os.system('cls')
+            os.system('clear')
         elif chose == "0":
             print("\nПрощайте! Для повторного запуска введите команду \"test\" или откройте новую вкладку!")
             quit()
