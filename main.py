@@ -217,7 +217,7 @@ def chose_some_test_from_list():
         space = ""
         if i < 9: space += " "
         print(f"\t{num}.{space} {pred_list[i].text}") 
-    print("\t0. Вернуться в меню") 
+    print("\t0.  Вернуться в меню") 
     try:
         num_of_pred = int(user_input("\nВыберите предмет из списка: ")) - 1
     except ValueError:
@@ -281,7 +281,7 @@ def chose_some_test_from_list():
         #формируем процент выполненности или невыполненности:
         print(f"\t{num}.{space} ({persent}) {num_test} | {name_test}")
     
-    print("\t0. Вернуться в меню")
+    print("\t0.   Вернуться в меню")
     try:
         num_of_test = int(user_input("\nC какого теста начать (по счёту): ")) - 1
         if num_of_test == -1:
