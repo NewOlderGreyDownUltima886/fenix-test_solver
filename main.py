@@ -67,7 +67,7 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                 num_of_error += 1
                 num_of_error_vsego = 50
                 if num_of_error <= num_of_error_vsego:
-                    print(f"ПЛОХОЕ ИНТЕРЕНЕТ СОЕДИНЕНИЕ!!! Пробую ещё раз через 10 секунд({num_of_error}/{num_of_error_vsego})...\nGay Word: {gay_words[x]}")
+                    print(f"ПЛОХОЕ ИНТЕРЕНЕТ СОЕДИНЕНИЕ!!! Пробую ещё раз через 10 секунд({num_of_error}/{num_of_error_vsego})...\nGay Word: {gay_words[x]}\n")
                     time.sleep(10)
                     return make_a_request(url, data, silens, streaming, num_of_error=num_of_error)
                 else:
@@ -430,7 +430,7 @@ def close_test(num_pred_r=-1, num_testing=-1):
         if "Эта страница ошибки может содержать важные данные, так как ASP.NET настроено на показ подробных сообщений об ошибках с помощью" in str(a):
             return False
         
-        print("Всё хорошо, тест закрылся")
+        #print("Всё хорошо, тест закрылся")
         return True
     
     if test_na_zakritiy_test_izza_istekshego_vremeni(a):
@@ -942,7 +942,7 @@ def main():
                             print("Error456, try again") 
                             return False
                     
-                    procent_solved = get_result() 
+                    procent_solved = get_result(num_pred_r, name_of_test) 
 
                         
                             
