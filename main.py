@@ -92,23 +92,14 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                 print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {b2[i].text}")
                 return False
         
-        b3 = soup.select('title')
-        for i, item in enumerate(b3):
-            if "Невозможно" in item.text:
-                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {item.text}")
-                return False
+        #b3 = soup.select('title')
+        #for i, item in enumerate(b3):
+        #    if "Невозможно" in item.text:
+        #        print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {item.text}")
+        #        return False
 
-        b4 = soup.select('h1')
-        for i, item in enumerate(b4):
-            if "Ошибка сервера" in item.text:
-                print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: {item.text}")
-                return False
-
-        if "Эта страница ошибки может содержать важные данные, так как ASP.NET настроено на показ подробных сообщений об ошибках с помощью" in str(a):
-            print(f"!!!СРАБОТАЛ ДИСКОННЕКТ, ПЕРЕПОДКЛЮЧАЮСЬ: КОММЕНТАРИЙ")
-            return False
         
-        print("тест на дисконект прошел успешно, ошибки не отловлены")
+        #print("тест на дисконект прошел успешно, ошибки не отловлены")
         return True
 
     if test_na_diskonekt_izza_istekshey_sessii(a):
@@ -130,7 +121,7 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                 print(f"\nСДОХЛА СЕССИЯ {get_login()}:{get_pass()}!!! Пробую ещё раз через 10 секунд ({num_of_error}/{num_of_error_vsego})")
                 time.sleep(10)
                 preres = auth(silence=True)
-                print(f'Try to reauth: {preres}') 
+                print(f'Try to re-auth: {preres}') 
                 return make_a_request(url, data, silens=silens, streaming=streaming, num_of_error=num_of_error, auth_mode=auth_mode, get_request=get_request)
             else:
                 print("Не получается авторизоваться, проверьте подключение к интернету!!!\n—————>Выхожу...")
@@ -142,9 +133,12 @@ def user_input(str1):
     res = input(str1)
     if res == "admin":
         admin()
-        return False
+        print("\n")
+        return user_input(str1)
     else:
         return res
+
+
 def set_login_pass(login1, pass1):
     with open("pass_file", "w+") as file:
         file.write(f"{login1}\n{pass1}")
@@ -423,10 +417,44 @@ def check_all_results_of_tests_by_num_of_pred(num_of_pred=0):
 
 #Завершить тест из теста
 #POST /eport/eport/studtst2.aspx HTTP/1.1
-def close_test():
+def close_test(num_pred_r=-1, num_testing=-1):
     data_close_test = "ctl00_MainContent_ToolkitScriptManager1_HiddenField=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTUwNzg4NDI2OQ9kFgJmD2QWAgIDD2QWAgIBD2QWAgIDD2QWQgIBDzwrAAQBAA8WAh4FVmFsdWUFKCgxKSDQoNGD0YHRgdC60LDRjyDRhNC40LvQvtGB0L7RhNC40Y8gLTFkZAIJDzwrAAQBAA8WAh8ABSvQmNC00LXQvdGC0LjRhNC40LrQsNGC0L7RgCDRgtC10YHRgtCwIDEyNDUwZGQCCw8UKwAEDxYCHwAFKtCS0LDRiCDQu9C40LzQuNGCINCy0YDQtdC80LXQvdC4IDIg0LzQuNC9LmQ8KwAMAQAWBB4JRm9yZUNvbG9yCqABHgRfIVNCAgRkZGQCDw8UKwAGZGRkZDwrAAcBABYEHgtDc3NGaWxlUGF0aAUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHgpDc3NQb3N0Zml4BQVHbGFzczwrAAYBABYCHhFTcHJpdGVDc3NGaWxlUGF0aAUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCEQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAhMPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIVDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCFw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAhkPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIbDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCHQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAh8PFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIhDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCIw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAiUPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAInDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCKQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAisPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAItDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCLw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAjEPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAIzDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCNQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAjcPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAI5DxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCOw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAj0PFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAI%2FDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCQQ8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAkMPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZAJFDxQrAAZkZGRkPCsABwEAFgQfAwUhfi9BcHBfVGhlbWVzL0dsYXNzL3swfS9zdHlsZXMuY3NzHwQFBUdsYXNzPCsABgEAFgIfBQUifi9BcHBfVGhlbWVzL0dsYXNzL0FTUHhCdXR0b24uc2tpbmQCRw8UKwAGZGRkZDwrAAcBABYEHwMFIX4vQXBwX1RoZW1lcy9HbGFzcy97MH0vc3R5bGVzLmNzcx8EBQVHbGFzczwrAAYBABYCHwUFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAkkPFCsABmRkZGQ8KwAHAQAWBB8DBSF%2BL0FwcF9UaGVtZXMvR2xhc3MvezB9L3N0eWxlcy5jc3MfBAUFR2xhc3M8KwAGAQAWAh8FBSJ%2BL0FwcF9UaGVtZXMvR2xhc3MvQVNQeEJ1dHRvbi5za2luZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WIQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjA0BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMDIFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24wMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjQFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b241BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjcFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b244BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uOQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEwBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEzBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTQFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE5BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yMQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIyBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjMFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yNAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI1BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjYFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yNwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjI4BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjkFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zMGNg%2Btc0Yd%2B%2BfMAWH2wgXducRETufa9xvvwxgDjN4cZ%2F&__VIEWSTATEGENERATOR=4F4B5F1E&ctl00%24MainContent%24ASPxButton03=&DXScript=1_42%2C1_75%2C2_27%2C2_34%2C2_40"
     a = make_a_request("http://eport.fesmu.ru/eport/eport/studtst2.aspx", data_close_test)
-    return a
+    def test_na_zakritiy_test_izza_istekshego_vremeni(a):
+        soup = BeautifulSoup(a.text, 'html.parser')
+        b4 = soup.select('h1')
+        
+        for i, item in enumerate(b4):
+            if "Ошибка сервера" in item.text:
+                return False
+        if "Эта страница ошибки может содержать важные данные, так как ASP.NET настроено на показ подробных сообщений об ошибках с помощью" in str(a):
+            return False
+        
+        print("Всё хорошо, тест закрылся")
+        return True
+    
+    if test_na_zakritiy_test_izza_istekshego_vremeni(a):
+        return True
+    else:
+        a = enter_current_test(num_pred_r, num_testing)  #входим
+        soup = BeautifulSoup(a.text, 'html.parser')
+        
+        # 1 проверка на уже прорешанный ранее тест с результатом меньше 70 %
+        b2 = soup.select('label[id="ctl00_MainContent_ASPxLabel10"]')
+        for i in range(len(b2)): 
+            if "Просмотр ответов заданий возможен только при выполнении не менее 70% теста" in b2[i].text:
+                print(f"\n!!!ТЕСТ НЕ ОТКРЫТ (1), ПРОБУЮ ЕГО ЗАКРЫТЬ...")
+                close_test_70_error()
+                return a
+        
+        # 2 проверка на решенный ранее более чем на 70+ тест
+        b3 = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
+        for i in range(len(b3)): 
+            if "Всего правильных ответов" in b3[i].text:
+                print(f"\n!!!ТЕСТ НЕ ОТКРЫТ (2), ПРОБУЮ ЕГО ЗАКРЫТЬ...")
+                close_test(num_pred_r, num_testing)
+                break
+    
 
 
 #Завершить тест при меньше 70 % ошибке
@@ -461,7 +489,7 @@ def check_all_first_cases_and_verify(num_of_error=0):
                 #if 'class="dxbButton_Glass"' in str(item):
                 #    print(f'{i} - прорешан')
                 if 'class="dxbButton_Aqua"' in str(item):
-                    print(f'Внимание!, {i+1} - не прорешан, пробую еще раз ({num_of_error}/{num_of_error_vsego})...')
+                    print(f'Внимание!, {i+1} вопрос не прорешан, пробую еще раз ({num_of_error}/{num_of_error_vsego})...')
                     return check_all_first_cases_and_verify(num_of_error=num_of_error)
                 #else:
                 #    print(f'{i} - error')
@@ -496,19 +524,19 @@ def admin():
         choice = str(user_input("\n———>Do: "))
 
         if choice == "0":
-            login = user_input("Login: ")
-            password = user_input("Passd: ")
+            login = input("Login: ")
+            password = input("Passd: ")
             auth(login, password)
         elif choice == "1":
             try:
-                pred = int(user_input("\n——————>What a predmet: "))
-                test = int(user_input("\n——————>What a test:    "))
-                enter_current_test(pred-1, test-1)
+                pred = int(input("\n——————>What a predmet index: "))
+                test = int(input("\n——————>What a test index:    "))
+                enter_current_test(pred, test)
             except Exception as e:
                 print(f"\n————————————> error: {e}")
         elif choice == "2":
             try:
-                choice2 = str(user_input("\n——————>What a question: "))
+                choice2 = str(input("\n——————>What a question: "))
                 select_question(choice2)
             except Exception as e:
                 print("\n————————————> error")
@@ -519,7 +547,9 @@ def admin():
         elif choice == "5":
             go_to_check_answer5()
         elif choice == "6":
-            close_test()
+            num_pred_r = input("\n——————>Индекс предмета: ")
+            num_testing = input("\n——————>Индекс теста: ")
+            close_test(num_pred_r=num_pred_r, num_testing=num_testing)
         elif choice == "7":
             close_test_70_error()
         
@@ -586,7 +616,7 @@ def main():
 4. Очистить экран
 0. Выйти
 """)
-        chose = input("Действие: ")
+        chose = user_input("Действие: ")
         if chose == "1":
             if get_login() and get_pass():
                 if auth():
@@ -595,8 +625,8 @@ def main():
                     print("Кажется в данных ошибка! Попробуйте изменить логин или пароль")
             else:
                 print("Кажется вы здесь впервые! Введите свои данные:")
-                login = input("Логин: ")
-                passw = input("Пароль: ")
+                login = user_input("Логин: ")
+                passw = user_input("Пароль: ")
                 set_login_pass(login1=quote(login), pass1=quote(passw))
                 print("Спасибо! Записал в файл...")
                 if auth():
@@ -608,9 +638,9 @@ def main():
             if get_login() and get_pass():
                 print(f"Ваши данные: {get_login()}:{get_pass()}")
             print("\nВведите новые данные (0 — вернуться в меню)")
-            login = input("Логин: ")
+            login = user_input("Логин: ")
             if login == "0": continue
-            passw = input("Пароль: ")
+            passw = user_input("Пароль: ")
             if passw == "0": continue
             set_login_pass(login1=quote(login), pass1=quote(passw))
             print("Спасибо! Записал в файл...")
@@ -628,11 +658,11 @@ def main():
 3. Исправить ошибку молодости (error)
 0. Вернуться в меню
 """)
-            chose2 = input("Действие: ")
+            chose2 = user_input("Действие: ")
             if chose2 == "1":
                 try:
-                    a1 = int(input("Со скольки: "))
-                    a2 = int(input("До скольки: "))     
+                    a1 = int(user_input("Со скольки: "))
+                    a2 = int(user_input("До скольки: "))     
                     num_of_mistakes_ot = a1
                     num_of_mistakes_do = a2
                     print(f"Установлено рандомное колиество ошибок от {num_of_mistakes_ot} до {num_of_mistakes_do}")
@@ -641,8 +671,8 @@ def main():
     
             if chose2 == "2":
                 try:
-                    a1 = int(input("Со скольки: "))
-                    a2 = int(input("До скольки: "))    
+                    a1 = int(user_input("Со скольки: "))
+                    a2 = int(user_input("До скольки: "))    
                     time_to_wait_ot = a1
                     time_to_wait_do = a2
                     print(f"Установлено рандомное время до завершения теста от {time_to_wait_ot} до {int(time_to_wait_do)} секунд")
@@ -650,7 +680,7 @@ def main():
                     print("Вы допустили ошибку! Попробуйте еще раз")
     
             if chose2 == "3":
-                a = input("Как зовут ошибку: ")
+                a = user_input("Как зовут ошибку: ")
                 if (a == "Дима") or (a == "дима"):
                     print(prikoli.dima)
                 elif (a == "Стас") or (a == "стас"):
@@ -725,7 +755,10 @@ def main():
             
             #идем решать указанные тесты
             while num_testing <= do_kakogo_testa_vkluchitelno:
+
+                time_first_start_test = datetime.datetime.now() #чтобы в дальнейшем его вычесть из ожидания 
                 a = enter_current_test(num_pred_r, num_testing)  #входим
+                
                 soup = BeautifulSoup(a.text, 'html.parser')
                 proverka = False
                 
@@ -772,7 +805,7 @@ def main():
 
                         result_solved_test.append([name_pred_r, name_of_test, num_non_smisl_of_test, "70+"])
 
-                        close_test()
+                        close_test(num_pred_r, num_testing)
                         break
                 
                 #Если проверка прошла успешно, то решаем данный тест
@@ -853,55 +886,36 @@ def main():
 
 
                     #готовися ждать
-                    time_to_wait = random.randint(time_to_wait_ot, time_to_wait_do) 
-                    #time_to_wait = 1800
-                    interval = datetime.timedelta(seconds=time_to_wait)
-                    the_end = datetime.datetime.now() + interval
-                    time_to_wait_min = f"{time_to_wait//60} минут {time_to_wait % 60} секунд"
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Буду ждать {time_to_wait_min} до {the_end.strftime("%H:%M:%S")}...")
-                    time.sleep(time_to_wait)
-                    print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
+                    #time_first_start_test                                                                            #start
+                    time_end_of_start_test = datetime.datetime.now()                                                  #end
+                    time_down = time_end_of_start_test-time_first_start_test                                          #прошедшее время
+                    time_to_wait = datetime.timedelta(seconds=(random.randint(time_to_wait_ot, time_to_wait_do)))     #указываем время в секундах которое надо было изначально подждать
+                    if time_to_wait > time_down:
+                        time_to_wait -= time_down                                                                     #отнимаем от него уже прошедшее время
+
+                        hours = int(str(time_to_wait).split(':')[0])
+                        minutes = int(str(time_to_wait).split(':')[1])
+                        seconds = int(str(time_to_wait).split(':')[2].split('.')[0])
+
+
+                        time_to_wait = datetime.timedelta(seconds=seconds, minutes=minutes, hours=hours)
+                        the_end = time_end_of_start_test + time_to_wait
+                        #print(time_to_wait)
+
+
+                        time_to_wait = seconds + minutes*60 + hours*3600 #КОТОРОЕ РЕАЛЬНО НУЖНО ЖДАТЬ
+
+                        time_to_wait_min_for_print = f"{time_to_wait//60} минут {time_to_wait % 60} секунд"
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Буду ждать {time_to_wait_min_for_print} до {the_end.strftime("%H:%M:%S")}...")
+                        time.sleep(time_to_wait)
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
                     
-                    #auth(silence=True)
-                    #time.sleep(5)
-                    #конец
                     
-                    
-                    
-                    res_exit = close_test()
-                    
-                    print(f"""
------------------------------------------------------
-{res_exit.text}
------------------------------------------------------
-""")
-                    
+                    if close_test(num_pred_r=num_pred_r, num_testing=num_testing):
+                        print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Тест закрыт успешно!")
                     
                     procent_solved = "Error" 
 
-                    """def get_result(mist=0):
-                        mist += 1
-                        if mist <= 3:
-                            try:    
-                                results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
-                                procent_solved = "ERROR"
-                                for j in range(len(results_array)-1): #j += 1
-                                    j += 1
-                                    if str(results_array[j][0].text).strip() in str(name_of_test):
-                                        procent_solved = str(results_array[j][1].text).strip()
-                                        return procent_solved
-                                    print("Error123, try again") 
-                                    time.sleep(5)
-                                    #auth(silence=True) 
-                                    return get_result(mist=mist)            
-                            except Exception :
-                                print("Error123, try again") 
-                                time.sleep(5)
-                                #auth(silence=True) 
-                                return get_result(mist=mist) 
-                        else:
-                            return "Error" """
-                    
                     def get_result(num_pred_r, name_of_test, num_of_mist=0):
                         try:
                             if num_of_mist <=5:
@@ -916,7 +930,7 @@ def main():
                                         if procent_solved == "0":
                                             #значит тест не завершился еще
                                             print(f"Внимание, с {num_of_mist}/5 раза тест не завершился, пробую еще раз...")
-                                            close_test()
+                                            close_test(num_pred_r, num_testing)
                                             return get_result(num_pred_r, name_of_test, num_of_mist=num_of_mist)
                                         else:
                                             return procent_solved
