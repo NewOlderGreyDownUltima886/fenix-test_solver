@@ -1,4 +1,4 @@
-gay_words = ['ConnectTimeout', 'Max retries', 'HTTPConnectionPool','Connection to eport.fesmu.ru timed out', 'timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
+gay_words = ['ConnectTimeout', 'Connection broken', 'ConnectionAbortedError', 'Max retries', 'HTTPConnectionPool','Connection to eport.fesmu.ru timed out', 'timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
 
 headers1 = {
 "Host": "eport.fesmu.ru",
