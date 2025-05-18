@@ -49,6 +49,12 @@ def get_cookies():
     return cookies1
 
 
+def go_diiferent_semestr_non_index(semestr_non_index):
+    data_go_diiferent_semestr = f'------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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tC1INC90YPQttC90YvQuSDRgdC10LzQtdGB0YLRgCwg0LrQu9C40LrQvdC40YLQtSDRjdGC0YMg0LrQvdC+0L/QutGDLCDQt9Cw0YLQtdC8INCy0YvQsdC10YDQuNGC0LUg0L3Rg9C20L3Ri9C5INGA0LDQt9C00LXQu2RkAhEPPCsABQEADxYCHwMFATRkZAITD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWBAILDxQrAAUPFgIeD0RhdGFTb3VyY2VCb3VuZGdkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh4PQ29sVmlzaWJsZUluZGV4ZmQWAGQCDQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ8UKwAFZGRkPCsABwEGD2QQFgFmFgEUKwABFgIfBWZkFgBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUjY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEFMGN0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxJEFTUHhCdXR0b24xMgZzRsmVE0dixGU8RNZvLSUh2grDQO64ngCXFQ2Uj6uo\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAu09kmvaEQ6wzap1Tsn+p8O05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8njPn9fFBhbepuiuQaM1z6Xuhnch6NBCwvb065S6RZsIF\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a{semestr_non_index}\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton7\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a1\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundaryq15kglT6RftNjNAi--\x0d\x0a'
+    a = make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_go_diiferent_semestr)
+    return a.text
+
+
 #Главная функция аутентификации
 gay_words = prikoli.gay_words
 def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth_mode=False, get_request=False):
@@ -68,7 +74,12 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
                 num_of_error_vsego = 50
                 if num_of_error <= num_of_error_vsego:
                     print(f"ПЛОХОЕ ИНТЕРЕНЕТ СОЕДИНЕНИЕ!!! Пробую ещё раз через 10 секунд({num_of_error}/{num_of_error_vsego})...\nGay Word: {gay_words[x]}\n")
-                    time.sleep(10)
+                    try:
+                        for i in range(10):
+                            time.sleep(1)
+                    except KeyboardInterrupt:
+                        print("Хорошо! Перестаю")
+                    
                     return make_a_request(url, data, silens, streaming, num_of_error=num_of_error)
                 else:
                     print(f"НЕ ПОЛУЧАЕТСЯ АВТОРИЗОВАТЬСЯ, проверьте подключение к интернету!!!\n—————>Выхожу...")
@@ -119,8 +130,12 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
             num_of_error_vsego = 10
             if num_of_error <= num_of_error_vsego:
                 print(f"\nСДОХЛА СЕССИЯ {get_login()}:{get_pass()}!!! Пробую ещё раз через 10 секунд ({num_of_error}/{num_of_error_vsego})")
-                time.sleep(10)
-                preres = auth(silence=True)
+                try:
+                    for i in range(10):
+                        time.sleep(1)
+                except KeyboardInterrupt:
+                    print("Хорошо! Перестаю")
+                preres = auth()
                 print(f'Try to re-auth: {preres}') 
                 return make_a_request(url, data, silens=silens, streaming=streaming, num_of_error=num_of_error, auth_mode=auth_mode, get_request=get_request)
             else:
@@ -208,13 +223,19 @@ def enter_current_test(num_of_pred=0, num_of_test=0):
 #Выбрать тест из списка и войти в него
 #POST /eport/eport/startstu.aspx HTTP/1.1  - 1 
 #POST /eport/eport/studtst1.aspx HTTP/1.1  - 2
-def chose_some_test_from_list():
+def chose_some_test_from_list(chosen_semestr):
     result = []
     del result[:]
 
     #Подгружаем список предметов
-    data_chose_some_test_from_list1 ="------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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iAtINCy0LLQtdC00LjRgtC1INC90YPQttC90YvQuSDRgdC10LzQtdGB0YLRgCwg0LrQu9C40LrQvdC40YLQtSDRjdGC0YMg0LrQvdC+0L/QutGDLCDQt9Cw0YLQtdC8INCy0YvQsdC10YDQuNGC0LUg0L3Rg9C20L3Ri9C5INGA0LDQt9C00LXQu2RkAhEPPCsABQEADxYCHwMFATRkZAITD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWBAILDxQrAAUPFgIeD0RhdGFTb3VyY2VCb3VuZGdkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh4PQ29sVmlzaWJsZUluZGV4ZmQWAGQCDQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ8UKwAFZGRkPCsABwEGD2QQFgFmFgEUKwABFgIfBWZkFgBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUjY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEFMGN0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxJEFTUHhCdXR0b24xMtz5qfbiMbMeISAR/QvG06v5dpRCChvKqSK05ZSRup7m\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAsLNa6a+9G22QqI86rItVBI05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8nk/PEZpnaVcCpNnaj/+3aAnk78Bg6t2TRTu0+rVkX32c\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a3\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB--\x0d\x0a"
+    if chosen_semestr == -1:
+        data_chose_some_test_from_list1 ="------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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iAtINCy0LLQtdC00LjRgtC1INC90YPQttC90YvQuSDRgdC10LzQtdGB0YLRgCwg0LrQu9C40LrQvdC40YLQtSDRjdGC0YMg0LrQvdC+0L/QutGDLCDQt9Cw0YLQtdC8INCy0YvQsdC10YDQuNGC0LUg0L3Rg9C20L3Ri9C5INGA0LDQt9C00LXQu2RkAhEPPCsABQEADxYCHwMFATRkZAITD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWBAILDxQrAAUPFgIeD0RhdGFTb3VyY2VCb3VuZGdkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh4PQ29sVmlzaWJsZUluZGV4ZmQWAGQCDQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ8UKwAFZGRkPCsABwEGD2QQFgFmFgEUKwABFgIfBWZkFgBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUjY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEFMGN0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxJEFTUHhCdXR0b24xMtz5qfbiMbMeISAR/QvG06v5dpRCChvKqSK05ZSRup7m\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAsLNa6a+9G22QqI86rItVBI05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8nk/PEZpnaVcCpNnaj/+3aAnk78Bg6t2TRTu0+rVkX32c\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a3\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB--\x0d\x0a"
+    else:
+        print("беру другой семак")
+        data_chose_some_test_from_list1= '------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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NC40LvQuCDQt9Cw0LTQsNGH0LDQvNC4INGC0LXQutGD0YnQtdCz0L4g0YHQtdC80LXRgdGC0YDQsCDQutC70LjQutC90LjRgtC1INGN0YLRgyDQutC90L7Qv9C60YMsINC30LDRgtC10Lwg0LLRi9Cx0LXRgNC40YLQtSDQvdGD0LbQvdGL0Lkg0YDQsNC30LTQtdC7ZGQCEQ88KwAFAQAPFgIeBVZhbHVlBQE0ZGQCEw9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgICAQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ9kFgQCCw8UKwAFDxYCHg9EYXRhU291cmNlQm91bmRnZGRkPCsABwEGD2QQFgFmFgEUKwABFgIeD0NvbFZpc2libGVJbmRleGZkFgBkAg0PZBYCZg9kFgJmD2QWAmYPZBYCAgEPFCsABWRkZDwrAAcBBg9kEBYBZhYBFCsAARYCHwhmZBYAZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WEgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE4BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTUFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEzBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjEFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjUFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNgUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIwBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTQFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b242BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE3BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTkFI2N0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxBTBjdGwwMCRNYWluQ29udGVudCRBU1B4UG9wdXBDb250cm9sMSRBU1B4QnV0dG9uMTI7NsP+HZVqA+0lJO8AcAts6/OmgIoVR6GdjSD/JeCnGQ==\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAuRfHHnBVt+ypt8N3A+k9Hg05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8npW/0tN7mmMMF/b59yxZbXdr8W6wWWqv8d9XTTe2GXMa\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundaryeewWYC7v2SUy7oxv--\x0d\x0a'
+    
     a = make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_chose_some_test_from_list1)
+    #print(a.text)
     soup = BeautifulSoup(a.text, 'html.parser')
     pred_list = soup.select('table[id="ctl00_MainContent_ASPxPopupControl1_ASPxListBox1_LBT"] > tr > td ')
     #Выводим его и спрашиваем предмет
@@ -436,7 +457,28 @@ def close_test(num_pred_r=-1, num_testing=-1):
     if test_na_zakritiy_test_izza_istekshego_vremeni(a):
         return True
     else:
+        #print("\n\nстарый ааааааааааааа\n\n")
+        #print(a.request.body)
+        #print(a.text)
         a = enter_current_test(num_pred_r, num_testing)  #входим
+
+        soup = BeautifulSoup(a.text, 'html.parser')
+        b4 = soup.select('h1')
+        
+        for i, item in enumerate(b4):
+            if "Ошибка сервера" in item.text:
+                print("\n\n\n\n\n\n\n Последний раз пробую решить мирно реауфом, жду 10 секунд....")
+                try:
+                    for i in range(10):
+                        time.sleep(1)
+                except KeyboardInterrupt:
+                    print("Хорошо! Перестаю")
+                auth()
+                a = enter_current_test(num_pred_r, num_testing) 
+
+
+
+
         soup = BeautifulSoup(a.text, 'html.parser')
         
         # 1 проверка на уже прорешанный ранее тест с результатом меньше 70 %
@@ -454,6 +496,16 @@ def close_test(num_pred_r=-1, num_testing=-1):
                 print(f"\n!!!ТЕСТ НЕ ОТКРЫТ (2), ПРОБУЮ ЕГО ЗАКРЫТЬ...")
                 close_test(num_pred_r, num_testing)
                 break
+    
+    print("!!!!!!!!!!!!!!ЧТОТО ПОШЛО НЕ ТАК, НЕ ХОЧЕТ ЗАКРЫВАТЬСЯ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    #print("\n\nновый аааааааааааа\n\n\n")
+    #print(a.request.body)
+    #print(a.text)
+    print("\n\n")
+    return close_test(num_pred_r, num_testing)
+
+
+        
     
 
 
@@ -477,8 +529,8 @@ def try_to_check_all():
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 def check_all_first_cases_and_verify(num_of_error=0):
     num_of_error += 1
-    num_of_error_vsego = 5
-    if num_of_error <=5:
+    num_of_error_vsego = 50
+    if num_of_error <=num_of_error_vsego:
         try_to_check_all()
 
         res = check_first_and_return_main_menu()
@@ -569,7 +621,8 @@ def admin():
             os.system("cls")
 
         elif choice == "10":
-            print(chose_some_test_from_list())
+            chosen_semestr = -1
+            print(chose_some_test_from_list(chosen_semestr))
         elif choice == "12":
             break
         elif choice == "15":
@@ -582,6 +635,21 @@ def admin():
             continue
     
 
+
+
+
+######################################################
+######################################################
+######################################################
+def parse_num_of_test(user_inputed_test):
+    pass
+
+
+######################################################
+######################################################
+######################################################
+
+
 auth_bool = False
 def main():
     auth_bool = False
@@ -589,6 +657,8 @@ def main():
     num_of_mistakes_do = 4
     time_to_wait_ot = 420
     time_to_wait_do = 660
+
+    chosen_semestr = -1
 
     ################################проверка на апдейт и установка
     print("Добро пожаловать!!! Проверяю обновления...")
@@ -606,12 +676,15 @@ def main():
     ##############################################################
     
     while True:
-
-        print("""
+        if chosen_semestr == -1:
+            chosen_semestr_to_print = "сейчашний"
+        else:
+            chosen_semestr_to_print = chosen_semestr
+        print(f"""
 --------------------------------------------------
 Выберите действие:
 1. Решить тесты
-2. Изменить параметы — ошибки и время
+2. Изменить ошибки (от {num_of_mistakes_ot} до {num_of_mistakes_do}) и время (от {time_to_wait_ot} до {time_to_wait_do} секунд)
 3. Изменить данные аккаунта
 4. Очистить экран
 0. Выйти
@@ -634,6 +707,19 @@ def main():
                 else:
                     print("Кажется в данных ошибка! Попробуйте изменить логин или пароль")
                 #continue
+        elif chose == "822282":
+            while True:
+                try:
+                    semestr = int(user_input("Какой семестр (по счёту): "))
+                    if (semestr > 0) and (semestr <= 12):
+                        chosen_semestr = semestr
+                        break
+                    else:
+                        print("Будьте внимательнее, попробуйте еще раз!\n")
+                        continue
+                except Exception:
+                    print("Будьте внимательнее, попробуйте еще раз!\n")
+            
         elif chose == "3":
             if get_login() and get_pass():
                 print(f"Ваши данные: {get_login()}:{get_pass()}")
@@ -647,6 +733,7 @@ def main():
             continue
         elif chose == "4":
             os.system('clear')
+        
         elif chose == "0":
             print("\nПрощайте! Для повторного запуска введите команду \"test\" или откройте новую вкладку!")
             quit()
@@ -693,11 +780,16 @@ def main():
                     print("У вас еще всё более чем отлично!, попробуйте кого-нибудь другого исправить...")
         if auth_bool == True:
             to_exit = False
-            while True:
 
+
+            while True:
+                if chosen_semestr > -1:
+                    print(f"Пытаюсь войти в семестр {chosen_semestr}...")
+                    go_diiferent_semestr_non_index(chosen_semestr)
+                
                 #допытываем от пользователя номер предмета и тесты
                 try:
-                    list_of_preds_and_tests = chose_some_test_from_list()
+                    list_of_preds_and_tests = chose_some_test_from_list(chosen_semestr)
                 except ValueError:
                     print("\nБудьте внимательнее! Пробуем ещё раз...")
                     continue
@@ -755,13 +847,25 @@ def main():
             
             #идем решать указанные тесты
             while num_testing <= do_kakogo_testa_vkluchitelno:
+                
+                
+                #auth()   ################################################################################################ пока не надо
 
                 time_first_start_test = datetime.datetime.now() #чтобы в дальнейшем его вычесть из ожидания 
-                a = enter_current_test(num_pred_r, num_testing)  #входим
+                
+                ################################################
+                #################-ВХОДИМ-#######################
+                a = enter_current_test(num_pred_r, num_testing)  
                 
                 soup = BeautifulSoup(a.text, 'html.parser')
                 proverka = False
                 
+                
+                ###################################################################
+                #0 - НУЖНА ЕЩЕ ОДНА ПРОВЕРКА - А ЗАШЛИ ЛИ МЫ ВООБЩЕ БЛЯТЬ НА НЕГО??
+                ###################################################################
+
+
                 # 1 проверка на Исчерпанный суточный лимит выполнения теста (или существует указанный тест вообще) 
                 b1 = soup.select('script[src^="/eport/WebResource.axd"] ~ script[type="text/javascript"]')
                 for i in range(len(b1)): 
@@ -775,6 +879,7 @@ def main():
                         proverka = True
                         break
 
+
                 # 2 проверка на уже прорешанный ранее тест с результатом меньше 70 %
                 b2 = soup.select('label[id="ctl00_MainContent_ASPxLabel10"]')
                 for i in range(len(b2)): 
@@ -786,6 +891,7 @@ def main():
                         close_test_70_error()
                         break
                 
+
                 # 3 проверка на решенный ранее более чем на 70+ тест
                 b3 = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
                 for i in range(len(b3)): 
@@ -812,23 +918,32 @@ def main():
                 if proverka == True:
                     continue    
                 elif proverka == False:
-                    soup = BeautifulSoup(a.text, 'html.parser')
-                    b = soup.select('div[id="ctl00_MainContent_Panel1"] > label')
-                    name_of_test = "Error_name" 
-                    try:
-                        name_of_test = (b[0].text).strip()
-                    except Exception:
-                        name_of_test ="Error_name" 
-                        try:
-                            if auth():
-                                name_of_test = (b[0].text).strip()
-                        except Exception:
-                            pass
                     
-                    name_of_pred = name_pred_r
+                    soup = BeautifulSoup(a.text, 'html.parser')
+                    name_of_test = "Error_name" 
+                    num_non_smisl_of_test = "Error_num_non_smisl_of_test"
+                    try:
+                        name_of_pred = name_pred_r
 
-                    c = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
-                    num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
+                        b = soup.select('div[id="ctl00_MainContent_Panel1"] > label')
+                        name_of_test = (b[0].text).strip()
+                        
+                    except Exception as e:
+                        name_of_test ="Error_name" 
+
+                        print(f"Не получилось узнать название теста: {e}\n\n")
+                        print(a.text)
+                        print("\n\n")
+                    try:
+                        c = soup.select('label[id="ctl00_MainContent_ASPxLabel8"]')
+                        num_non_smisl_of_test = (str(c[0].text)[20:]).strip()
+                    except Exception as e:
+                        num_non_smisl_of_test = "Error_num_non_smisl_of_test"
+
+                        print(f"Не получилось узнать номер теста : {e}\n\n")
+                        print(a.text)
+                        print("\n\n")
+                    
                     
                     time_start_test = datetime.datetime.now()
                     print(f"\n--------------------------------------------------\n{datetime.datetime.now().strftime("%H:%M:%S")}:Захожу на тест {num_testing+1} \"{str(name_of_test)[4:]}\" ({num_non_smisl_of_test})")
@@ -881,10 +996,6 @@ def main():
 
 
 
-                    
-
-
-
                     #готовися ждать
                     #time_first_start_test                                                                            #start
                     time_end_of_start_test = datetime.datetime.now()                                                  #end
@@ -907,7 +1018,13 @@ def main():
 
                         time_to_wait_min_for_print = f"{time_to_wait//60} минут {time_to_wait % 60} секунд"
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Буду ждать {time_to_wait_min_for_print} до {the_end.strftime("%H:%M:%S")}...")
-                        time.sleep(time_to_wait)
+                        
+                        try:
+                            for i in range(time_to_wait):
+                                time.sleep(1)
+                        except KeyboardInterrupt:
+                            print("Хорошо! Перестаю")
+
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——>Время вышло! Заканчиваю тестирование...")
                     
                     
@@ -920,7 +1037,7 @@ def main():
                         try:
                             if num_of_mist <=5:
                                 num_of_mist += 1
-                                time.sleep(6)
+                                #time.sleep(6)
                                 results_array = check_all_results_of_tests_by_num_of_pred(num_of_pred=num_pred_r)
                                 for j in range(len(results_array)-1): #j += 1
                                     j += 1
@@ -936,6 +1053,10 @@ def main():
                                             return procent_solved
                                     print("Error123, try again")
                                     return False 
+                                
+
+                                print("\n!!!!!!!!!чтото пошло не так при загрузке резов теста, возвращаю hui")
+                                return "hui"
                             else:
                                 return "Error123454575656345#"          
                         except Exception :
@@ -944,9 +1065,6 @@ def main():
                     
                     procent_solved = get_result(num_pred_r, name_of_test) 
 
-                        
-                            
-                            
                             
                             #print(f"SOVPADENIE NAIDENO: {str(results_array[j][0].text).strip()}  —>  {str(test_name_list[i].text).strip()}")
                             #if int(str(results_array[j][1].text).strip()) >= new_list_of_persent[0][i]: 
@@ -958,14 +1076,17 @@ def main():
                     
                     answers_complete = False
                     num_testing += 1
-                    num_of_error = 0
                     result_solved_test.append([name_of_pred, str(name_of_test)[4:], num_non_smisl_of_test, procent_solved])
                     
                     if num_testing > do_kakogo_testa_vkluchitelno:
                         pass
                     else:
                         print(f"{datetime.datetime.now().strftime("%H:%M:%S")}:——> Жду 10 секунд и приступаю к следующему...")
-                        time.sleep(10)
+                        try:
+                            for i in range(10):
+                                time.sleep(1)
+                        except KeyboardInterrupt:
+                            print("Хорошо! Перестаю")
 
             
 
