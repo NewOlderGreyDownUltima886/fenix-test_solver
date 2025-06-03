@@ -2,28 +2,34 @@ import subprocess, sys
 import time
 i = 1
 
-print("    Выберите версию:\n1. Терминал (старая версия)\n2. Телеграм бот (новая нестабильная версия)")
+#print("Выберите версию:\n1. Терминал (старая версия)\n2. Телеграм бот (новая нестабильная версия)")
 chose = 0
 try:
     while True:
-        print()
-        chose = int(input("\nВыбор (цифра 1 или 2): "))
-        if (chose != 1) or (chose != 2):
+        print('\n--------------------------------------------------------')
+        chose = input("Выберите версию:\n1. Терминал (старая версия)\n2. Телеграм бот (новинка)\nВыбор (цифра 1 или 2): ")
+        try:
+            chose = int(chose)
+        except Exception:
+          print("Попробуйте еще раз!")
+          continue
+        if (chose == 1) or (chose == 2):
             break
         else:
-            print("Попробуйте еще раз!\n")
+            print("Попробуйте еще раз!")
+            continue
 except:
-    print("Попробуйте еще раз!\n")
+    print("Попробуйте еще раз!")
 while True:
     if i > 1:
-        print("Автоматически перезапускаю fenix...")
+        print(f"\n--------------------------------------------------------\nПерезапускаю fenix {i} раз")
+        #print("Автоматически перезапускаю fenix...")
     time.sleep(1)
-    print(f"------------------------------------------------------------------------------------------------------------\nЗапускаю fenix-а {i} раз\n")
     if chose == 1:
         subprocess.call(["python", "core_test_solver_terminal_edition.py"])
     elif chose ==2:
-        print("Пока недоступно, извините!")
-        #subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
+        #print("Пока недоступно, извините!")
+        subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
     i += 1
 
 
