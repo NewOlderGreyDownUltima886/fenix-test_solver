@@ -1,4 +1,4 @@
-import subprocess, sys
+import subprocess, sys, os
 import time
 i = 1
 
@@ -24,13 +24,13 @@ while True:
     try:
         while True:
             print('\n--------------------------------------------------------')
-            chose = input("Выберите действие:\n1. Терминал (старая версия)\n2. Телеграм бот (новинка)\n3. Инструкция по получению токена тг-бота\n0. Выйти\n—>Ваш выбор: ")
+            chose = input("Выберите действие:\n1. Терминал (старая версия)\n2. Телеграм бот (новинка)\n3. Инструкция по получению токена тг-бота\n4. Очистить экран\n0. Выйти\n—>Ваш выбор: ")
             try:
                 chose = int(chose)
             except Exception:
               print("Попробуйте еще раз!")
               continue
-            if (chose == 1) or (chose == 2) or (chose == 3) or (chose == 0):
+            if (chose == 1) or (chose == 2) or (chose == 3) or (chose == 0) or (chose == 4):
                 break
             else:
                 print("Попробуйте еще раз!")
@@ -47,6 +47,8 @@ while True:
     elif chose ==0:
         print("\nПрощайте! Прощайте! Прощайте!")
         quit()
+    elif chose ==4:
+        os.system('cls')
     elif chose ==3:
         print('''
 --------------------------------------------------------
