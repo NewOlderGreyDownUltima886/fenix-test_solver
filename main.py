@@ -1,8 +1,17 @@
 import subprocess, sys, os
 import time
-i = 1
 
-print("""
+i = 1
+chose = 0
+
+if sys.argv[1] != "1":
+  subprocess.call(["python", "updater.py"])
+
+while True:
+    try:
+        while True:
+            chose = input("""
+                          
 ////////////////////////////////////////////////
 // ________  ________  __    __  __  __    __ //
 //|        \\|        \\|  \\  |  \\|  \\|  \\  |  \\//
@@ -14,63 +23,43 @@ print("""
 //| $$      | $$     \\| $$  \\$$$| $$| $$  | $$//
 // \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$ \\$$   \\$$//
 ////////////////////////////////////////////////
-""")
 
-subprocess.call(["python", "updater.py"])
-
-chose = 0
-
-while True:
-    try:
-        while True:
-            print('\n--------------------------------------------------------')
-            chose = input("Выберите действие:\n1. Терминал (старая версия)\n2. Телеграм бот (новинка)\n3. Инструкция по получению токена тг-бота\n4. Очистить экран\n0. Выйти\n—>Ваш выбор: ")
+--------------------------------------------------
+ГЛАВНОЕ МЕНЮ:
+1. Консольная версия (классическая)
+2. Telegram бот (новинка)
+3. Очистить экран
+0. Выйти из программы
+                          
+—>Ваш выбор: """)
             try:
                 chose = int(chose)
             except Exception:
               print("Попробуйте еще раз!")
               continue
-            if (chose == 1) or (chose == 2) or (chose == 3) or (chose == 0) or (chose == 4):
+            if (chose == 1) or (chose == 2) or (chose == 3) or (chose == 0):
                 break
             else:
                 print("Попробуйте еще раз!")
                 continue
     except:
         print("Попробуйте еще раз!")
-
-    time.sleep(1)
     if chose == 1:
-        subprocess.call(["python", "core_test_solver_terminal_edition.py"])
-    elif chose ==2:
-        #print("Пока недоступно, извините!")
-        subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
-    elif chose ==0:
+        if sys.argv[1] != "1":
+          subprocess.call(["python", "core_test_solver_terminal_edition.py"])
+        else:
+          subprocess.call(["python", "core_test_solver_terminal_edition.py", "1"])
+    elif chose == 2:
+        if sys.argv[1] != "1":
+          subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
+        else:
+          subprocess.call(["python", "core_test_solver_TgBot_edition.py", "1"])
+    elif chose == 0:
         print("\nПрощайте! Прощайте! Прощайте!")
         quit()
-    elif chose ==4:
-        os.system('clear')
-        print("""
-////////////////////////////////////////////////
-// ________  ________  __    __  __  __    __ //
-//|        \\|        \\|  \\  |  \\|  \\|  \\  |  \\//
-//| $$$$$$$$| $$$$$$$$| $$\\ | $$ \\$$| $$  | $$//
-//| $$__    | $$__    | $$$\\| $$|  \\ \\$$\\/  $$//
-//| $$  \\   | $$  \\   | $$$$\\ $$| $$  >$$  $$ //
-//| $$$$$   | $$$$$   | $$\\$$ $$| $$ /  $$$$\\ //
-//| $$      | $$_____ | $$ \\$$$$| $$|  $$ \\$$\\//
-//| $$      | $$     \\| $$  \\$$$| $$| $$  | $$//
-// \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$ \\$$   \\$$//
-////////////////////////////////////////////////
-""")
-    elif chose ==3:
-        print('''
---------------------------------------------------------
-Инструкция по получению токена для тг-бота:
-  1. Зайти в тг-бота @BotFather
-  2. Нажать на старт
-  3. Ввести команду /newbot
-  4. Он предложит ввести имя будущего бота, вводите абсолютно любое (например "Бот для тестов")
-  5. Дальше он предложит ввести логин бота. Вводите любое сочетание букв, но чтобы в конце оно заканчивалось на "bot" (например: "blablabla_bot" или "ewfewfwefwef_bot"). Этот логин у всех ботов, как и у пользователей, должен быть уникален, и скорее все простые названия уже заняты другими людьми.
-  6. Бот пришлет токен (token to access the HTTP API) по-типу "7275770830:AAFfKHMxsуYbc584s2o93VnybVrTiJXXl54". Скопируйте его и вставьте ниже:
-  7. Если вдруг удалите это смс с токеном, то отправьте @BotFather команду "/token", укажите своего бота и он пришлет вам его еще раз''')
+    elif chose == 3:
+        if sys.argv[1] != "1":
+            os.system('clear')
+        else:
+            os.system('cls')
     i += 1
