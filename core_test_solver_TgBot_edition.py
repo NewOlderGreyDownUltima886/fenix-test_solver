@@ -76,10 +76,11 @@ TELEGRAM-БОТ:
   6. Бот пришлет токен (token to access the HTTP API) по-типу "7275770830:AAFfKHMxsуYbc584s2o93VnybVrTiJXXl54". Скопируйте его и вставьте ниже:
   7. Если вдруг удалите это смс с токеном, то отправьте @BotFather команду "/token", укажите своего бота и он пришлет вам его еще раз''')
     elif chose == 4:
-        if sys.argv[1] != "1":
-            os.system('clear')
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "1":
+                os.system('cls')
         else:
-            os.system('cls')
+            os.system('clear')
     elif chose == 0:
         quit()
     
@@ -234,10 +235,10 @@ TELEGRAM-БОТ:
                     try:
                         if get_request == True:
                             a = requests.get(url, headers=self.headers1, cookies=self.get_cookies(), stream=streaming)            #ДЛя GET-запросов
-                            time.sleep(1)
+                            time.sleep(0.5)
                         else:   
                             a = requests.post(url, data=data, headers=self.headers1, cookies=self.get_cookies(), stream=streaming) #Для POST-запросов
-                            time.sleep(1)
+                            time.sleep(0.5)
                     except Exception as E:
                         print(f'''\n----------------------------ERROR-------------------------------------------''')
                         for x in self.gay_words:
@@ -785,7 +786,7 @@ TELEGRAM-БОТ:
 
             ######################## DELETE MESSAGES` ARRAY
             def del_msg(chat_id, msg_id_array):  #msg_id - array
-                time.sleep(0.2)
+                #time.sleep(0.2)
                 try:
                     if len(msg_id_array) != 0:
                         print("\n--—-----------------------------------------\nПОЛУЧЕН ЗАПРОС НА УДАЛЕНИЕ:", msg_id_array)
@@ -1435,7 +1436,7 @@ TELEGRAM-БОТ:
                         
                         if answers_complete == False:
                             print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:—————>1.ПРОБЕГАЮСЬ ПО ВОПРОСАМ...")
-                            time.sleep(2)
+                            time.sleep(1)
                             bot.edit_message_text(chat_id=call.message.chat.id, message_id=MAIN_SMS[counter].id, text=f"🟡 {num_testing+1} тест \"{name_of_test}\"\n(2/6): Пробегаюсь по вопросам...")
                             
                             time_before = datetime.datetime.now()
@@ -1587,7 +1588,7 @@ TELEGRAM-БОТ:
                     print(f"\n{datetime.datetime.now().strftime("%H:%M:%S")}:——>Итого ошибок: {errored_solved_test}")
                 print("\n\n")
 
-                time.sleep(3)
+                time.sleep(1.5)
                 del_msg(call.message.chat.id, fenix.array_to_del)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=array_message[call.message.chat.id][0], 
                     text=f"""Итоговый результат:\n{itog_print}""", reply_markup=make_keyboard([["Вернуться в меню", "-1"]]))  
