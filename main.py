@@ -47,6 +47,9 @@ while True:
     elif chose ==2:
         #print("Пока недоступно, извините!")
         subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
+    elif chose ==0:
+        print("\nПрощайте! Прощайте! Прощайте!")
+        quit()
     elif chose ==3:
         print('''
 Инструкция по получению токена для тг-бота:
