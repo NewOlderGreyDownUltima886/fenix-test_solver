@@ -20,7 +20,7 @@ import prikoli
 import telebot
 from telebot import types, apihelper
 
-
+'''
 print("Добро пожаловать!!! Проверяю обновления...")
 process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.DEVNULL, text=True, shell=True)
 process = subprocess.Popen(['git init'], stdout=subprocess.DEVNULL, text=True, shell=True)
@@ -33,6 +33,13 @@ for line in iter(process.stdout.readline, ''):
     elif "Updating" in line:
         print("\nОбновление установлено успешно!!!\n")
         quit()
+'''
+
+
+def set_bot_token(bot_token):
+    with open("bot_file", "w+") as file:
+        file.write(f" {bot_token}")
+    return True 
 
 def get_bot_token():
     try:
@@ -42,12 +49,40 @@ def get_bot_token():
     except FileNotFoundError:
         return False
 
+
+if get_bot_token():
+    TOKEN = get_bot_token()
+else:
+    print('''
+--------------------------------------------------------
+Кажется вы здесь впервые! Вот вам инструкция:
+  1. Зайти в тг-бота @BotFather
+  2. Нажать на старт
+  3. Ввести команду /newbot
+  4. Он предложит ввести имя будущего бота, вводите абсолютно любое (например "Бот для тестов")
+  5. Дальше он предложит ввести логин бота. Вводите любое сочетание букв, но чтобы в конце оно заканчивалось на "bot" (например: "blablabla_bot" или "ewfewfwefwef_bot"). Этот логин у всех ботов, как и у пользователей, должен быть уникален, и скорее все простые названия уже заняты другими людьми.
+  6. Бот пришлет токен (token to access the HTTP API) по-типу "7275770830:AAFfKHMxsуYbc584s2o93VnybVrTiJXXl54". Скопируйте его и вставьте ниже:
+  7. Если вдруг удалите это смс с токеном, то отправьте @BotFather команду "/token", укажите своего бота и он пришлет вам его еще раз
+''')
+    user_token = input("Токен: ")
+    print(f"Вы ввели токен \"{user_token}\"...")
+    TOKEN = user_token
+    set_bot_token(user_token)
+
 TOKEN = get_bot_token()
 
-
-bot = telebot.TeleBot(TOKEN)
+try:
+    bot = telebot.TeleBot(TOKEN)
+except ValueError:
+    print('\n--------------------------------------------------------')
+    print("Косые руки, вы снова наступили в ошибку! Поробуйте еще раз...")
+    user_token = input("Введите токен: ")
+    if user_token == "":
+        print("\nКажется вы опять ничего не ввели и на этот раз! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
+    TOKEN = user_token
+    set_bot_token(user_token)
+    quit()
 apihelper.SESSION_TIME_TO_LIVE = 5 * 60
-
 
 #####################################################################################################################
 #####################################################################################################################
@@ -1389,6 +1424,18 @@ def solve_test_by_indexes_of_tests(call):
 
 # дима лох
 #main()
-print('\n--—-----------------------------------------\nБот готов к запуску\n')
-bot.infinity_polling(timeout=50, skip_pending=True)#, restart_on_change=True)
-print("\n--—-----------------------------------------\nПрограма завершила свою работу\n")
+print('\n--------------------------------------------------------\nПробую запустить бота\n')
+try:
+    bot.infinity_polling(timeout=50, skip_pending=True)#, restart_on_change=True)
+except ValueError:
+    print("Косые руки, вы кажется ничего не ввели! Поробуйте еще раз со следующим жизненным циклом умирающей программы...")
+except Exception as E:
+    if "Unauthorized" in str(E):
+        print(f"ВЫ ВВЕЛИ НЕПРАВИЛЬНЫЙ ТОКЕН \"{TOKEN}\"\n—> Поробуйте ещё раз!")
+        user_token = input("Введите еще раз токен: ")
+        if user_token == "":
+            print("Кажется вы ничего не ввели и на этот раз! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
+        TOKEN = user_token
+        set_bot_token(user_token)
+        quit()
+print("\n--------------------------------------------------------\nПрограма завершила свою работу\n")
