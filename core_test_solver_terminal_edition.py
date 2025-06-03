@@ -100,10 +100,10 @@ def make_a_request(url, data, silens=True, streaming=False, num_of_error=0, auth
     num_of_error=num_of_error
     try:
         if get_request == True:
-            time.sleep(1)
+            time.sleep(0.5)
             a = requests.get(url, headers=headers1, cookies=get_cookies(), stream=streaming)            #ДЛя GET-запросов
         else:
-            time.sleep(1)       
+            time.sleep(0.5)       
             a = requests.post(url, data=data, headers=headers1, cookies=get_cookies(), stream=streaming) #Для POST-запросов
     except Exception as E:
         print(f'''\n----------------------------ERROR-------------------------------------------''')
@@ -657,10 +657,11 @@ def admin():
                 print("критическая ошибка")
             else: print(var1)
         elif choice == "11":
-            if sys.argv[1] != "1":
-                os.system('clear')
+            if len(sys.argv) > 1:
+                if sys.argv[1] == "1":
+                    os.system('cls')
             else:
-                os.system('cls')
+                os.system('clear')
 
         elif choice == "10":
             chosen_semestr = -1
@@ -707,7 +708,7 @@ def main():
             chosen_semestr_to_print = "сейчашний"
         else:
             chosen_semestr_to_print = chosen_semestr
-        time.sleep(0.3)
+        #time.sleep(0.3)
         print(f"""
 --------------------------------------------------
 КОНСОЛЬНАЯ ВЕРСИЯ:
@@ -793,10 +794,11 @@ def main():
             print("Спасибо! Записал в файл...")
             continue
         elif chose == "6":
-            if sys.argv[1] != "1":
-                os.system('clear')
+            if len(sys.argv) > 1:
+                if sys.argv[1] == "1":
+                    os.system('cls')
             else:
-                os.system('cls')
+                os.system('clear')
         
         elif chose == "0":
             #print("\nПрощайте! Для повторного запуска введите команду \"test\" или откройте новую вкладку!")
