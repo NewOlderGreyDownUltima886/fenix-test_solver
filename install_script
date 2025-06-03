@@ -3,6 +3,7 @@
 pkg install python -y
 pip install requests
 pip install timedelta
+pip install telebot
 pip install bs4
 
 
