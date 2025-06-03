@@ -9,13 +9,52 @@
 #6. нет защиты от временного дисконекта (+)
 #7. дима пошел нахер (+++)
 
-import os, subprocess
+import os, re, sys
 import requests
-import time, random, datetime, timedelta, string
+import time, random, datetime, timedelta
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 import prikoli
 
+def parse_num_of_tests(str_to_parse):
+    res = re.split(",|;", str_to_parse)
+    res2 = []	
+    itog_print = "Решаю тесты: "
+	
+    for i, j in enumerate(res):
+        res[i] = j.strip()
+        razdel = res[i].find('-')
+        if razdel != -1:
+            num1 = res[i][:razdel]
+            num2 = res[i][razdel+1:]
+            #print(razdel, num1, num2)
+            if i == (len(res)-1):
+                itog_print += f"c {num1} по {num2}, верно?"
+            else:
+                itog_print += f"c {num1} по {num2}, "
+            for X in range(int(num1), int(num2)+1):
+                res2.append(str(X))
+        else:
+            res2.append(j.strip())	
+            if i == (len(res)-1):
+                itog_print += f"{j.strip()}, верно?"
+            else:
+                itog_print += f"{j.strip()}, "
+    print(itog_print)
+    return [res2, itog_print]
+
+def parse_interval(message):
+    try:
+        a = message
+        razdel = a.find('-')
+        if razdel == -1:
+            return False
+        num1 = int(a[:razdel])
+        num2 = int(a[razdel+1:])
+        return [num1, num2]
+    except Exception as E:
+        print(f"ERROR: {str(E)}")
+        return False
 
 #Функции для работы с сессией
 headers1 = prikoli.headers1
@@ -618,7 +657,10 @@ def admin():
                 print("критическая ошибка")
             else: print(var1)
         elif choice == "11":
-            os.system("cls")
+            if sys.argv[1] != "1":
+                os.system('clear')
+            else:
+                os.system('cls')
 
         elif choice == "10":
             chosen_semestr = -1
@@ -665,16 +707,19 @@ def main():
             chosen_semestr_to_print = "сейчашний"
         else:
             chosen_semestr_to_print = chosen_semestr
+        time.sleep(0.3)
         print(f"""
 --------------------------------------------------
-Выберите действие:
+КОНСОЛЬНАЯ ВЕРСИЯ:
 1. Решить тесты
-2. Изменить ошибки (от {num_of_mistakes_ot} до {num_of_mistakes_do}) и время (от {time_to_wait_ot} до {time_to_wait_do} секунд)
-3. Изменить данные аккаунта
-4. Очистить экран
-0. Выйти
+2. Изменить совершаемые ошибки (от {num_of_mistakes_ot} до {num_of_mistakes_do})
+3. Изменить время ожидания (от {time_to_wait_ot} до {time_to_wait_do} секунд)
+4. Изменить данные аккаунта
+5. Исправить ошибку молодости
+6. Очистить экран
+0. Выйти в главное меню
 """)
-        chose = user_input("Действие: ")
+        chose = user_input("—>Ваш выбор: ")
         if chose == "1":
             if get_login() and get_pass():
                 if auth():
@@ -692,20 +737,51 @@ def main():
                 else:
                     print("Кажется в данных ошибка! Попробуйте изменить логин или пароль")
                 #continue
-        elif chose == "822282":
-            while True:
-                try:
-                    semestr = int(user_input("Какой семестр (по счёту): "))
-                    if (semestr > 0) and (semestr <= 12):
-                        chosen_semestr = semestr
-                        break
+        
+        elif chose == "2":
+            try:
+                a = user_input("Диапозон ошибок (например 2-6): ")
+                if parse_interval(a):
+                    error = False
+                    num1, num2 = parse_interval(a)
+                    if num1 < 0 : error = True
+                    if num2 > 30 : error = True
+                    if num1 > num2: error = True
+
+                    if error:
+                        print("Вы допустили ошибку!")
                     else:
-                        print("Будьте внимательнее, попробуйте еще раз!\n")
-                        continue
-                except Exception:
-                    print("Будьте внимательнее, попробуйте еще раз!\n")
-            
+                        num_of_mistakes_ot = num1
+                        num_of_mistakes_do = num2
+                        print(f"Установлено рандомное колиество ошибок от {num_of_mistakes_ot} до {num_of_mistakes_do}")
+                else:
+                    print("Вы допустили ошибку!")
+            except ValueError:
+                print("Вы допустили ошибку!")
+        
         elif chose == "3":
+            try:
+                a = user_input("Диапозон ожидаемого времени (например 300-380): ")
+                if parse_interval(a):
+                    error = False
+                    num1, num2 = parse_interval(a)
+                    if num1 < 0 : error = True
+                    if num2 > 1200 : error = True
+                    if num1 > num2: error = True
+
+                    if error:
+                        print("Вы допустили ошибку!")
+                    else:
+                        time_to_wait_ot = num1
+                        time_to_wait_do = num2
+                        print(f"Установлено рандомное время до завершения теста от {time_to_wait_ot} до {int(time_to_wait_do)} секунд")
+                else:
+                    print("Вы допустили ошибку!")
+            except ValueError:
+                print("Вы допустили ошибку!")
+    
+        
+        elif chose == "4":
             if get_login() and get_pass():
                 print(f"Ваши данные: {get_login()}:{get_pass()}")
             print("\nВведите новые данные (0 — вернуться в меню)")
@@ -716,61 +792,33 @@ def main():
             set_login_pass(login1=quote(login), pass1=quote(passw))
             print("Спасибо! Записал в файл...")
             continue
-        elif chose == "4":
-            os.system('clear')
+        elif chose == "6":
+            if sys.argv[1] != "1":
+                os.system('clear')
+            else:
+                os.system('cls')
         
         elif chose == "0":
             #print("\nПрощайте! Для повторного запуска введите команду \"test\" или откройте новую вкладку!")
             quit()
 
-        elif chose == "2":
-            print(f"""
-1. Количество ошибок (установлено от {num_of_mistakes_ot} до {num_of_mistakes_do})
-2. Сколько ждать времени чтобы завершить тест(установлено от {time_to_wait_ot} до {time_to_wait_do} секунд)
-3. Исправить ошибку молодости (error)
-0. Вернуться в меню
-""")
-            chose2 = user_input("Действие: ")
-            if chose2 == "1":
-                try:
-                    a1 = int(user_input("Со скольки: "))
-                    a2 = int(user_input("До скольки: "))     
-                    num_of_mistakes_ot = a1
-                    num_of_mistakes_do = a2
-                    print(f"Установлено рандомное колиество ошибок от {num_of_mistakes_ot} до {num_of_mistakes_do}")
-                except ValueError:
-                    print("Вы допустили ошибку!")
-    
-            if chose2 == "2":
-                try:
-                    a1 = int(user_input("Со скольки: "))
-                    a2 = int(user_input("До скольки: "))    
-                    time_to_wait_ot = a1
-                    time_to_wait_do = a2
-                    print(f"Установлено рандомное время до завершения теста от {time_to_wait_ot} до {int(time_to_wait_do)} секунд")
-                except ValueError:
-                    print("Вы допустили ошибку! Попробуйте еще раз")
-    
-            if chose2 == "3":
-                a = user_input("Как зовут ошибку: ")
-                if (a == "Дима") or (a == "дима"):
-                    print(prikoli.dima)
-                elif (a == "Стас") or (a == "стас"):
-                    print(prikoli.admin)
-                elif (a == "Алена") or (a == "алена") or (a == "Алёна") or (a == "алёна"):
-                    print(prikoli.alena)
-                elif (a == "Эля") or (a == "эля") or (a == "Элина") or (a == "элина"):
-                    print(prikoli.elia)
-                else:
-                    print("У вас еще всё более чем отлично!, попробуйте кого-нибудь другого исправить...")
+        elif chose == "5":
+            a = user_input("Как зовут ошибку: ")
+            if (a == "Дима") or (a == "дима"):
+                print(prikoli.dima)
+            elif (a == "Стас") or (a == "стас"):
+                print(prikoli.admin)
+            elif (a == "Алена") or (a == "алена") or (a == "Алёна") or (a == "алёна"):
+                print(prikoli.alena)
+            elif (a == "Эля") or (a == "эля") or (a == "Элина") or (a == "элина"):
+                print(prikoli.elia)
+            else:
+                print("У вас еще всё более чем отлично!, попробуйте кого-нибудь другого исправить...")
+
         if auth_bool == True:
             to_exit = False
 
-
             while True:
-                if chosen_semestr > -1:
-                    print(f"Пытаюсь войти в семестр {chosen_semestr}...")
-                    go_diiferent_semestr_non_index(chosen_semestr)
                 
                 #допытываем от пользователя номер предмета и тесты
                 try:
