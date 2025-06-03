@@ -1,11 +1,17 @@
 import subprocess, sys, os
-import time
 
 i = 1
 chose = 0
 
-if sys.argv[1] != "1":
+if len(sys.argv) > 1:
+  if sys.argv[1] == "1":
+    print("Для Windows-платформы обновления не предпологаются!")
+  else:
+    subprocess.call(["python", "updater.py"])
+else:
   subprocess.call(["python", "updater.py"])
+
+
 
 while True:
     try:
@@ -45,21 +51,24 @@ while True:
     except:
         print("Попробуйте еще раз!")
     if chose == 1:
-        if sys.argv[1] != "1":
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "1":
+              subprocess.call(["python", "core_test_solver_terminal_edition.py", "1"])
+        else:
           subprocess.call(["python", "core_test_solver_terminal_edition.py"])
-        else:
-          subprocess.call(["python", "core_test_solver_terminal_edition.py", "1"])
     elif chose == 2:
-        if sys.argv[1] != "1":
-          subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "1":
+              subprocess.call(["python", "core_test_solver_TgBot_edition.py", "1"])
         else:
-          subprocess.call(["python", "core_test_solver_TgBot_edition.py", "1"])
+          subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
     elif chose == 0:
         print("\nПрощайте! Прощайте! Прощайте!")
         quit()
     elif chose == 3:
-        if sys.argv[1] != "1":
-            os.system('clear')
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "1":
+              os.system('cls')
         else:
-            os.system('cls')
+            os.system('clear')
     i += 1
