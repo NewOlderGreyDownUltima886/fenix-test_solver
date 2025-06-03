@@ -48,7 +48,7 @@ while True:
         print("\nПрощайте! Прощайте! Прощайте!")
         quit()
     elif chose ==4:
-        os.system('cls')
+        os.system('clear')
     elif chose ==3:
         print('''
 --------------------------------------------------------
