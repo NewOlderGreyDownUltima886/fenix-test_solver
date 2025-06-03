@@ -50,25 +50,29 @@ while True:
                 continue
     except:
         print("Попробуйте еще раз!")
-    if chose == 1:
-        if len(sys.argv) > 1:
-            if sys.argv[1] == "1":
-              subprocess.call(["python", "core_test_solver_terminal_edition.py", "1"])
-        else:
-          subprocess.call(["python", "core_test_solver_terminal_edition.py"])
-    elif chose == 2:
-        if len(sys.argv) > 1:
-            if sys.argv[1] == "1":
-              subprocess.call(["python", "core_test_solver_TgBot_edition.py", "1"])
-        else:
-          subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
-    elif chose == 0:
-        print("\nПрощайте! Прощайте! Прощайте!")
-        quit()
-    elif chose == 3:
-        if len(sys.argv) > 1:
-            if sys.argv[1] == "1":
-              os.system('cls')
-        else:
-            os.system('clear')
+    
+    try:
+      if chose == 1:
+          if len(sys.argv) > 1:
+              if sys.argv[1] == "1":
+                subprocess.call(["python", "core_test_solver_terminal_edition.py", "1"])
+          else:
+            subprocess.call(["python", "core_test_solver_terminal_edition.py"])
+      elif chose == 2:
+          if len(sys.argv) > 1:
+              if sys.argv[1] == "1":
+                subprocess.call(["python", "core_test_solver_TgBot_edition.py", "1"])
+          else:
+            subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
+      elif chose == 0:
+          print("\nПрощайте! Прощайте! Прощайте!")
+          quit()
+      elif chose == 3:
+          if len(sys.argv) > 1:
+              if sys.argv[1] == "1":
+                os.system('cls')
+          else:
+              os.system('clear')
+    except KeyboardInterrupt:
+      print("pohui")
     i += 1
