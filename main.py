@@ -30,7 +30,7 @@ while True:
             except Exception:
               print("Попробуйте еще раз!")
               continue
-            if (chose == 1) or (chose == 2) or (chose == 3):
+            if (chose == 1) or (chose == 2) or (chose == 3) or (chose == 0):
                 break
             else:
                 print("Попробуйте еще раз!")
