@@ -17,21 +17,6 @@ from urllib.parse import quote
 import prikoli
 
 
-print("Добро пожаловать!!! Проверяю обновления...")
-process = subprocess.Popen(['cd ~/fenix-test_solver'], stdout=subprocess.DEVNULL, text=True, shell=True)
-process = subprocess.Popen(['git init'], stdout=subprocess.DEVNULL, text=True, shell=True)
-process = subprocess.Popen(['git stash'], stdout=subprocess.DEVNULL, text=True, shell=True)
-process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
-for line in iter(process.stdout.readline, ''):
-    if "Already up to date" in line:
-        print("\nОбновления не найдены, у вас последняя версия!(нестабильная)\n")
-        break
-    elif "Updating" in line:
-        print("\nОбновление установлено успешно!!!\n")
-        quit()
-
-
-
 #Функции для работы с сессией
 headers1 = prikoli.headers1
 SessionId=""
