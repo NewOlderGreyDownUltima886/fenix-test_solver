@@ -40,7 +40,7 @@ while True:
     chose = -1
     try:
         while True:
-            #time.sleep(0.3)
+            time.sleep(1)
             chose = input(f"""
 --------------------------------------------------
 TELEGRAM-БОТ:
@@ -85,7 +85,10 @@ TELEGRAM-БОТ:
         quit()
     
     elif chose == 2:
-        user_token = input("—>Введите токен: ")
+        user_token = input("—>Введите токен (0 - для отмены): ")
+        if user_token == "0":
+            print("—>Отменён ввода нового токена")
+            continue
         if user_token == "":
             print("\nКажется вы ничего не ввели! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
         TOKEN = user_token
@@ -861,7 +864,8 @@ TELEGRAM-БОТ:
                 key_new = make_keyboard([['1. Решить тесты', 0],
                                         [f'2. Изменить ошибки ({errors})', 1], 
                                         [f'3. Изменить время ожидания ({times})   ', 2], 
-                                        ['4. Изменить данные аккаунта', 3],])
+                                        ['4. Изменить данные аккаунта', 3],
+                                        ['5. Выключить бота', 4]])
 
                 sms = bot.send_message(message.from_user.id, text="""Выберите действие:"""
                                     , reply_markup=key_new)
@@ -898,12 +902,34 @@ TELEGRAM-БОТ:
                 key_new = make_keyboard([['1. Решить тесты', 0],
                                         [f'2. Изменить ошибки ({errors})', 1], 
                                         [f'3. Изменить время ожидания ({times})   ', 2], 
-                                        ['4. Изменить данные аккаунта', 3],])
+                                        ['4. Изменить данные аккаунта', 3],
+                                        ['5. Выключить бота', 4]])
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=array_message[call.message.chat.id][0], 
                     text="""Выберите действие:""", reply_markup=key_new)  
 
 
-
+            @bot.callback_query_handler(func=lambda call: call.data == '4')
+            def quit_from_gui(call):
+                sms = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"✅До скорой встречи через 5...")
+                x = 5
+                time.sleep(1)
+                while x != 1:
+                    x = x - 1
+                    sms = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"✅До скорой встречи через {x}...")
+                    time.sleep(1)
+                if del_msg(call.message.chat.id, [sms.id]):
+                    print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
+                else:
+                    print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
+                try:
+                    bot.stop_polling()
+                except Exception:
+                    pass
+                print("\n--------------------------------------------------\nОстанавливаю бота, подождите!...\n")
+                bot.stop_bot()
+                sys.exit(0)
+                quit()
+                
 
             ###########################################################################
             ###########################################################################
@@ -1613,42 +1639,43 @@ TELEGRAM-БОТ:
             ######################################################################################################################################      
             
             try:
-                print('\n--------------------------------------------------------\nБот запущен! Общайтесь с ним через свой любимый telegram!\n')
+                print('\n-------------------------------------------------- \nБот запущен! Общайтесь с ним через свой любимый Telegram!\n!!!Чтобы прервать его работу нажмите Ctrl+C либо на интерактивную кнопку в самом боте')
                 bot.infinity_polling(timeout=50, skip_pending=True)#, restart_on_change=True)
-                #bot.infinity_polling()
-                print("\n--------------------------------------------------------\nПрограма завершила свою работу\n")
+                print("\n--------------------------------------------------\nБот остановлен!\n")
             except ValueError:
-                print("Косые руки, вы кажется ничего не ввели! Поробуйте еще раз со следующим жизненным циклом умирающей программы...")
+                print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
             except KeyboardInterrupt:
+                print("\n--------------------------------------------------\nБот остановлен!\n")
+                try:
+                    bot.stop_polling()
+                except Exception:
+                    pass
                 print("Понял, ВЫКЛЮЧАЮСЬ!")
-                quit()
+                continue
             except Exception as E:
                 if "Unauthorized" in str(E):
                     print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
                     continue   
-                    #user_token = input("Введите еще раз токен: ")
-                    #if user_token == "":
-                    #    print("Кажется вы ничего не ввели и на этот раз! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
-                    #TOKEN = user_token
-                    #set_bot_token(user_token)
-                    #quit()
                 else:
                     print(f"!!!!!!!!!!!!!!!\n—> 2 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
                     continue
-        
+        except KeyboardInterrupt:
+            print("\n--------------------------------------------------\nБот остановлен!\n")
+            try:
+                bot.stop_polling()
+            except Exception:
+                pass
+            continue
         except Exception as E:
             if "Unauthorized" in str(E):
                 print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
                 continue  
-                #print(f"3 ВЫ ВВЕЛИ НЕПРАВИЛЬНЫЙ ТОКЕН \"{TOKEN}\"\n—> Поробуйте ещё раз!")
-                #user_token = input("Введите еще раз токен: ")
-                #if user_token == "":
-                #    print("Кажется вы ничего не ввели и на этот раз! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
-                #TOKEN = user_token
-                #set_bot_token(user_token)
-                #quit()
             else:
                 print(f"!!!!!!!!!!!!!!!\n—> 3 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
+                try:
+                    bot.stop_polling()
+                except Exception:
+                    pass
                 continue
 
 
