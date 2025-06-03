@@ -7,8 +7,10 @@ process = subprocess.Popen(['git stash'], stdout=subprocess.DEVNULL, text=True, 
 process = subprocess.Popen(['git pull'], stdout=subprocess.PIPE, text=True, shell=True)
 for line in iter(process.stdout.readline, ''):
     if "Already up to date" in line:
-        print("\nОбновления не найдены, у вас последняя версия!")
+        print("\n—>Обновления не найдены, у вас последняя версия!")
         break
     elif "Updating" in line:
-        print("\nОбновление установлено успешно!")
+        print("\n—>Обновления успешно установлены!")
         quit()
+
+        
