@@ -1663,7 +1663,9 @@ TELEGRAM-БОТ:
                             num_of_error = 1
                         except requests.exceptions.ConnectionError as E:
                             if num_of_error <= num_of_error_at_all:
-                                print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                #print(f"\n!!!Проблема с интернетом 1, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                num_of_error += 1
                                 time.sleep(3)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
@@ -1676,7 +1678,9 @@ TELEGRAM-БОТ:
                             continue
                         except Exception as E:
                             if num_of_error <= num_of_error_at_all:
-                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                #print(f"\n!!!Проблема с чем-то, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                num_of_error += 1
                                 time.sleep(3)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
