@@ -3,21 +3,11 @@ import subprocess, sys, os
 i = 1
 chose = 0
 
-if len(sys.argv) > 1:
-  if sys.argv[1] == "1":
-    print("Для Windows-платформы обновления не предпологаются!")
-  else:
-    subprocess.call(["python", "updater.py"])
-else:
-  subprocess.call(["python", "updater.py"])
-
-
 
 while True:
     try:
         while True:
-            chose = input("""
-                          
+            chose = input("""           
 ////////////////////////////////////////////////
 // ________  ________  __    __  __  __    __ //
 //|        \\|        \\|  \\  |  \\|  \\|  \\  |  \\//
@@ -65,7 +55,6 @@ while True:
           else:
             subprocess.call(["python", "core_test_solver_TgBot_edition.py"])
       elif chose == 0:
-          print("\nПрощайте! Прощайте! Прощайте!")
           quit()
       elif chose == 3:
           if len(sys.argv) > 1:
