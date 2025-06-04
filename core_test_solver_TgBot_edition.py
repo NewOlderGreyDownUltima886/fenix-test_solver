@@ -1678,14 +1678,16 @@ TELEGRAM-БОТ:
                             QUIT_BOT = True
                             bot.stop_bot()
                             print("Понял, ВЫКЛЮЧАЮСЬ!")
-                            continue
+                            quit()
                         except Exception as E:
                             if "Unauthorized" in str(E):
                                 print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
-                                break   
+                                QUIT_BOT = True
+                                quit()  
                             else:
                                 print(f"!!!!!!!!!!!!!!!\n—> 2 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
-                                break
+                                QUIT_BOT = True
+                                quit()
                         except Exception as E:
                             if num_of_error <= num_of_error_at_all:
                                 #print(f"\n!!!Проблема с чем-то, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
