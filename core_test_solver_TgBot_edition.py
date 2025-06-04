@@ -1347,7 +1347,7 @@ TELEGRAM-БОТ:
                 solve_test_by_indexes_of_tests(call)
 
             ##################### УДАЛЕНИЕ ПРОСТО ТАК ОТПРАВЛЕННЫХ СООБЩЕНИЙ
-            @bot.message_handler(content_types=['text'])
+            @bot.message_handler(content_types=['text', 'animation', 'audio', 'document', 'photo', 'sticker', 'story', 'video', 'video_note', 'voice', 'contact', 'dice', 'game', 'poll', 'venue', 'location', 'invoice', 'successful_payment', 'connected_website', 'passport_data', 'web_app_data'])
             def reakcia_na_no_name_sms_from_user(message):
                 if str(message.chat.id) == str(get_chat_id()):
                     PROVERKA_USER = True
