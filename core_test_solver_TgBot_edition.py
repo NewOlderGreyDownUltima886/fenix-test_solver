@@ -1662,19 +1662,20 @@ TELEGRAM-БОТ:
             try:
                 print('\n-------------------------------------------------- \nЗапускаю бота! Общайтесь с ним через свой любимый Telegram!\n!!!Чтобы прервать его работу нажмите Ctrl+C либо на интерактивную кнопку в самом боте')
                 num_of_error = 1
-                num_of_error_at_all = 100
+                num_of_error_at_all = 50
                 while True:
                     if QUIT_BOT == False:
                         try:
+                            num_of_error = 1
                             bot.polling(timeout=50, skip_pending=True)#, none_stop=True)#, restart_on_change=True)
-                            print("hzhzhhzhzhhzhzhzzzhzhzhzhhh")
+                            #print("hzhzhhzhzhhzhzhzzzhzhzhzhhh")
                             num_of_error = 1
                         except requests.exceptions.ConnectionError as E:
                             if num_of_error <= num_of_error_at_all:
-                                #print(f"\n!!!Проблема с интернетом 1, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
-                                print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                #print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                print(f"\n!!!Проблема с интернетом (1), пробую еще раз через 10 секунд ({num_of_error}/{num_of_error_at_all})...")
                                 num_of_error += 1
-                                time.sleep(3)
+                                time.sleep(10)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
                                 QUIT_BOT = True
@@ -1698,10 +1699,10 @@ TELEGRAM-БОТ:
                                 quit()
                         except Exception as E:
                             if num_of_error <= num_of_error_at_all:
-                                #print(f"\n!!!Проблема с чем-то, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
-                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                #print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 10 секунд ({num_of_error}/{num_of_error_at_all})...")
                                 num_of_error += 1
-                                time.sleep(3)
+                                time.sleep(10)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
                                 QUIT_BOT = True
