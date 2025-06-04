@@ -20,7 +20,7 @@ import prikoli
 import telebot
 from telebot import types, apihelper
 
-
+QUIT_BOT = False
 
 def set_bot_token(bot_token):
     with open("bot_file", "w+") as file:
@@ -40,7 +40,7 @@ while True:
     chose = -1
     try:
         while True:
-            time.sleep(1)
+            #time.sleep(1)
             chose = input(f"""
 --------------------------------------------------
 TELEGRAM-БОТ:
@@ -82,6 +82,7 @@ TELEGRAM-БОТ:
         else:
             os.system('clear')
     elif chose == 0:
+        QUIT_BOT = True
         quit()
     
     elif chose == 2:
@@ -214,6 +215,7 @@ TELEGRAM-БОТ:
                             return set_cookies
                     except KeyError:
                         print("Попробуйте с включенным интернетом!")
+                        QUIT_BOT = True
                         quit()
                 def set_new_session_id(self):
                     self.SessionId = self.get_new_session_id()
@@ -259,8 +261,10 @@ TELEGRAM-БОТ:
                                     return self.make_a_request(url, data, silens, streaming, num_of_error=num_of_error)
                                 else:
                                     print(f"НЕ ПОЛУЧАЕТСЯ АВТОРИЗОВАТЬСЯ, проверьте подключение к интернету!!!\n—————>Выхожу...")
+                                    QUIT_BOT = True
                                     quit()  #return False
                         print(f"НЕИЗВЕСТНАЯ ФАТАЛЬНАЯ ОШИБКА, \nописание: {E}\n—————>Выхожу...")
+                        QUIT_BOT = True
                         quit() #return False
 
 
@@ -292,6 +296,7 @@ TELEGRAM-БОТ:
                         print(f'''\n----------------------------ERROR-------------------------------------------''')
                         if auth_mode == True:
                             print("Error, неправильный логин или пароль!!!\n—————>Выхожу...")
+                            QUIT_BOT = True
                             quit()
                         else:
                             num_of_error+=1
@@ -308,6 +313,7 @@ TELEGRAM-БОТ:
                                 return self.make_a_request(url, data, silens=silens, streaming=streaming, num_of_error=num_of_error, auth_mode=auth_mode, get_request=get_request)
                             else:
                                 print("Не получается авторизоваться, проверьте подключение к интернету!!!\n—————>Выхожу...")
+                                QUIT_BOT = True
                                 quit() #return False
 
 
@@ -356,6 +362,7 @@ TELEGRAM-БОТ:
                             print(f"Пробую зайти в аккаунт {login1}:{password1}...\n")
                             if (login1 == False) or (password1 == False):
                                 print("ERROR, НЕ СУЩЕСТВУЕТ ФАЙЛА С ЛОГИНОМ И ПАРОЛЕМ!!!\n—————>Выхожу...")
+                                QUIT_BOT = True
                                 quit()
                         else:
                             print(f"Пробую зайти в аккаунт {login1}:{password1}...\n")
@@ -379,6 +386,7 @@ TELEGRAM-БОТ:
                         return False
                     else:
                         print("Проверьте подключение к интернету")
+                        QUIT_BOT = True
                         quit()
 
                 #Войти в тест с известным num_pred и num_test
@@ -737,6 +745,7 @@ TELEGRAM-БОТ:
                         return proverka(res)
                     else:
                         print("Не получается, извините, завершаю работу программы")
+                        QUIT_BOT = True
                         quit()
 
 
@@ -910,8 +919,8 @@ TELEGRAM-БОТ:
 
             @bot.callback_query_handler(func=lambda call: call.data == '4')
             def quit_from_gui(call):
-                sms = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"✅До скорой встречи через 5...")
-                x = 5
+                sms = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"✅До скорой встречи через 3...")
+                x = 3
                 time.sleep(1)
                 while x != 1:
                     x = x - 1
@@ -922,13 +931,18 @@ TELEGRAM-БОТ:
                 else:
                     print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
                 try:
-                    bot.stop_polling()
+                    bot.stop_bot()
                 except Exception:
                     pass
                 print("\n--------------------------------------------------\nОстанавливаю бота, подождите!...\n")
+                QUIT_BOT = True
+                print('1')
                 bot.stop_bot()
-                sys.exit(0)
-                quit()
+                print('2')
+                #quit()
+                #print('3')
+                #quit()
+                #print('4')
                 
 
             ###########################################################################
@@ -1640,14 +1654,46 @@ TELEGRAM-БОТ:
             
             try:
                 print('\n-------------------------------------------------- \nБот запущен! Общайтесь с ним через свой любимый Telegram!\n!!!Чтобы прервать его работу нажмите Ctrl+C либо на интерактивную кнопку в самом боте')
-                bot.infinity_polling(timeout=50, skip_pending=True)#, restart_on_change=True)
+                num_of_error = 1
+                num_of_error_at_all = 100
+                while True:
+                    if QUIT_BOT == False:
+                        try:
+                            bot.polling(timeout=50, skip_pending=True, none_stop=True)#, restart_on_change=True)
+                            num_of_error = 1
+                        except requests.exceptions.ConnectionError as E:
+                            if num_of_error <= num_of_error_at_all:
+                                print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                time.sleep(3)
+                            else:
+                                print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                                quit()
+                        except KeyboardInterrupt:
+                            print("\n--------------------------------------------------\nБот остановлен!\n")
+                            QUIT_BOT = True
+                            bot.stop_bot()
+                            print("Понял, ВЫКЛЮЧАЮСЬ!")
+                            continue
+                        except Exception as E:
+                            if num_of_error <= num_of_error_at_all:
+                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
+                                time.sleep(3)
+                            else:
+                                print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                                quit()
+                    else:
+                        print(f"QUIT_BOT == True, выхожу..")
+                        bot.stop_bot()
+                        
+
                 print("\n--------------------------------------------------\nБот остановлен!\n")
             except ValueError:
                 print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
             except KeyboardInterrupt:
                 print("\n--------------------------------------------------\nБот остановлен!\n")
                 try:
-                    bot.stop_polling()
+                    QUIT_BOT = True
+                    bot.stop_bot()
                 except Exception:
                     pass
                 print("Понял, ВЫКЛЮЧАЮСЬ!")
@@ -1662,7 +1708,8 @@ TELEGRAM-БОТ:
         except KeyboardInterrupt:
             print("\n--------------------------------------------------\nБот остановлен!\n")
             try:
-                bot.stop_polling()
+                QUIT_BOT = True
+                bot.stop_bot()
             except Exception:
                 pass
             continue
@@ -1673,9 +1720,8 @@ TELEGRAM-БОТ:
             else:
                 print(f"!!!!!!!!!!!!!!!\n—> 3 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
                 try:
-                    bot.stop_polling()
+                    QUIT_BOT = True
+                    bot.stop_bot()
                 except Exception:
                     pass
                 continue
-
-
