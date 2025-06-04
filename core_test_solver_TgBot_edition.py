@@ -1688,6 +1688,8 @@ TELEGRAM-БОТ:
                     else:
                         print(f"QUIT_BOT == True, выхожу..")
                         bot.stop_bot()
+                        sys.exit(0)
+                        quit()
                         
 
                 print("\n--------------------------------------------------\nБот остановлен!\n")
