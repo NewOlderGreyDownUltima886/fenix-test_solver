@@ -1666,7 +1666,7 @@ TELEGRAM-БОТ:
                 while True:
                     if QUIT_BOT == False:
                         try:
-                            bot.polling(timeout=50, skip_pending=True, none_stop=True)#, restart_on_change=True)
+                            bot.polling(timeout=50, skip_pending=True)#, none_stop=True)#, restart_on_change=True)
                             print("hzhzhhzhzhhzhzhzzzhzhzhzhhh")
                             num_of_error = 1
                         except requests.exceptions.ConnectionError as E:
