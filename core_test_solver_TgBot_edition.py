@@ -93,7 +93,8 @@ TELEGRAM-БОТ:
         if user_token == "":
             print("\nКажется вы ничего не ввели! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
         TOKEN = user_token
-        print(f"—>Спасибо, записал токен \"{user_token}\"...")
+        if user_token != "":
+            print(f"—>Спасибо, записал токен \"{user_token}\"...")
         set_bot_token(user_token)
     
     elif chose == 1:
@@ -126,10 +127,16 @@ TELEGRAM-БОТ:
             6. Бот пришлет токен (token to access the HTTP API) по-типу "7275770830:AAFfKHMxsуYbc584s2o93VnybVrTiJXXl54". Скопируйте его и вставьте ниже:
             7. Если вдруг удалите это смс с токеном, то отправьте @BotFather команду "/token", укажите своего бота и он пришлет вам его еще раз
             ''')
-                user_token = input("Токен: ")
-                print(f"Спасибо, записал токен \"{user_token}\"...")
-                set_bot_token(user_token)
+                user_token = input("—>Введите токен (0 - для отмены): ")
+                if user_token == "0":
+                    print("—>Отменён ввода нового токена")
+                    continue
+                if user_token == "":
+                    print("\nКажется вы ничего не ввели! Как жаль, что мы не смогли договориться. Поробуйте еще раз...")
                 TOKEN = user_token
+                if user_token != "":
+                    print(f"—>Спасибо, записал токен \"{user_token}\"...")
+                set_bot_token(user_token)
 
             apihelper.SESSION_TIME_TO_LIVE = 5 * 60
             
@@ -1672,18 +1679,19 @@ TELEGRAM-БОТ:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
                                 QUIT_BOT = True
                                 bot.stop_bot()
-                                quit()
+                                break
+                                #quit()
                         except KeyboardInterrupt:
                             print("\n--------------------------------------------------\nБот остановлен!\n")
-                            QUIT_BOT = True
+                            #QUIT_BOT = True
                             bot.stop_bot()
                             print("Понял, ВЫКЛЮЧАЮСЬ!")
-                            quit()
+                            break
+                            #quit()
                         except Exception as E:
                             if "Unauthorized" in str(E):
                                 print("\nВ ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
-                                QUIT_BOT = True
-                                quit()  
+                                break    
                             else:
                                 print(f"!!!!!!!!!!!!!!!\n—> 2 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
                                 QUIT_BOT = True
@@ -1698,7 +1706,8 @@ TELEGRAM-БОТ:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
                                 QUIT_BOT = True
                                 bot.stop_bot()
-                                quit()
+                                break
+                                #quit()
                     else:
                         print(f"QUIT_BOT == True, выхожу..")
                         bot.stop_bot()
@@ -1706,9 +1715,10 @@ TELEGRAM-БОТ:
                         quit()
                         
 
-                print("\n--------------------------------------------------\nБот остановлен!\n")
+                #print("\n--------------------------------------------------\nБот остановлен!\n")
             except ValueError:
-                print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
+                print("2 В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
+                continue
             except KeyboardInterrupt:
                 print("\n--------------------------------------------------\nБот остановлен!\n")
                 try:
