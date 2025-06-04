@@ -1660,6 +1660,7 @@ TELEGRAM-БОТ:
                     if QUIT_BOT == False:
                         try:
                             bot.polling(timeout=50, skip_pending=True, none_stop=True)#, restart_on_change=True)
+                            print("hzhzhhzhzhhzhzhzzzhzhzhzhhh")
                             num_of_error = 1
                         except requests.exceptions.ConnectionError as E:
                             if num_of_error <= num_of_error_at_all:
@@ -1669,6 +1670,8 @@ TELEGRAM-БОТ:
                                 time.sleep(3)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                                QUIT_BOT = True
+                                bot.stop_bot()
                                 quit()
                         except KeyboardInterrupt:
                             print("\n--------------------------------------------------\nБот остановлен!\n")
@@ -1684,6 +1687,8 @@ TELEGRAM-БОТ:
                                 time.sleep(3)
                             else:
                                 print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                                QUIT_BOT = True
+                                bot.stop_bot()
                                 quit()
                     else:
                         print(f"QUIT_BOT == True, выхожу..")
