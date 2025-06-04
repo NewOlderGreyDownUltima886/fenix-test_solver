@@ -21,6 +21,7 @@ import telebot
 from telebot import types, apihelper
 
 QUIT_BOT = False
+PROVERKA_USER = True
 
 def set_bot_token(bot_token):
     with open("bot_file", "w+") as file:
@@ -30,6 +31,19 @@ def set_bot_token(bot_token):
 def get_bot_token():
     try:
         with open("bot_file", "r") as file:
+            arr = file.readlines()
+            return arr[0].strip()
+    except FileNotFoundError:
+        return False
+
+def set_chat_id(chat_id):
+    with open("chat_id_file", "w+") as file:
+        file.write(f" {chat_id}")
+    return True 
+
+def get_chat_id():
+    try:
+        with open("chat_id_file", "r") as file:
             arr = file.readlines()
             return arr[0].strip()
     except FileNotFoundError:
@@ -820,7 +834,7 @@ TELEGRAM-БОТ:
                             print("    ERROR 2: (ошибка удаления смс)", e, " ВХОЖУ ЕЩЕ РАЗ В СЕБЯ ДЛЯ ПОПЫТКИ ЕЩЕ РАЗ!!!!!!!!!!!!!!!")
                             del_msg(chat_id, msg_id_array)
                     else:
-                        print("СПИСОК НА УДАЛЕНИЕ ПУСТОЙ!!!!")
+                        #print("СПИСОК НА УДАЛЕНИЕ ПУСТОЙ!!!!")
                         return True
                 except Exception as e:
                     print("    ERROR 1: (глобальная ошибка)", e, " ВХОЖУ ЕЩЕ РАЗ В СЕБЯ ДЛЯ ПОПЫТКИ ЕЩЕ РАЗ!!!!!!!!!!!!!!!")
@@ -846,8 +860,22 @@ TELEGRAM-БОТ:
 
 
             @bot.message_handler(commands=['help'])
-            def help_func(msg):
-                bot.send_message(msg.from_user.id, text='Используйте командy /start для запуска бота!') 
+            def help_func(message):
+                if PROVERKA_USER == False:
+                    x = 3
+                    sms = bot.reply_to(message, text=f"""Иди нахуй {x}""")
+                    time.sleep(0.3)
+                    while x != 1:
+                        x = x - 1
+                        sms = bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text=f"""Иди нахуй {x}""")
+                        time.sleep(0.3)
+                    if del_msg(message.chat.id, [sms.id, message.message_id]):
+                        pass
+                        #print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
+                else:
+                    sms = bot.reply_to(message, text='Используйте командy /start для запуска бота!') 
+                    time.sleep(5)
+                    print(del_msg(message.chat.id, [sms.id, message.message_id]))
 
 
             fenix = FENIX()
@@ -860,39 +888,66 @@ TELEGRAM-БОТ:
             ############################################################
             @bot.message_handler(commands=['start', 'start2'])
             def start_func(message):
-                print("\nCLEAR_STEP_HANDLER:", bot.clear_step_handler_by_chat_id(message.chat.id))
-                try:
-                    print(del_msg(message.chat.id, fenix.array_to_del))
-                except Exception as E:
-                    print(f"pohui: {E}")
-                init_new_dict(message)
-                errors = ''
-                if fenix.num_of_mistakes_ot == fenix.num_of_mistakes_do:
-                    errors = f"{fenix.num_of_mistakes_ot} шт"
-                else:
-                    errors = f"{fenix.num_of_mistakes_ot}-{fenix.num_of_mistakes_do}"
-                times = ''
-                if fenix.time_to_wait_ot == fenix.time_to_wait_do:
-                    times = f"{fenix.time_to_wait_ot} сек"
-                else:
-                    times = f"{fenix.time_to_wait_ot}-{fenix.time_to_wait_do}"
-                
-                key_new = make_keyboard([['1. Решить тесты', 0],
-                                        [f'2. Изменить ошибки ({errors})', 1], 
-                                        [f'3. Изменить время ожидания ({times})   ', 2], 
-                                        ['4. Изменить данные аккаунта', 3],
-                                        ['5. Выключить бота', 4]])
+                if (get_chat_id() == False) or (get_chat_id() == "") or (get_chat_id() == " "):
+                    set_chat_id(str(message.chat.id))
+                    print(f"\nВНИМАНИЕ, ИНИЦИРИРУЮ НОВОГО ХОЗЯИНА с id \'{message.chat.id}\'")
 
-                sms = bot.send_message(message.from_user.id, text="""Выберите действие:"""
-                                    , reply_markup=key_new)
-                #array_message[message.chat.id].append(message.message_id) - сообщение пользователя /start
+                if str(message.chat.id) == str(get_chat_id()):
+                    PROVERKA_USER = True
+                    print(f"\nЗДРАВСТВУЙТЕ, ХОЗЯИН с id \'{message.chat.id}\'")
+                else:
+                    PROVERKA_USER = False
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
                 
-                if len(array_message[message.chat.id]) != 0:
-                    print("\n----------------------------------\nWARNING - ОСТАЛОСЬ НЕКОТОРОЕ КОЛИЧЕСТВО СООБЩЕНИЙ В СПИСКЕ - УДАЛЯЮ !!!")
-                    del_msg(message.chat.id, array_message[message.chat.id])
+                #message.from_user.id
+                if PROVERKA_USER == False:
+                    x = 3
+                    sms = bot.reply_to(message, text=f"""Иди нахуй {x}""")
+                    time.sleep(0.3)
+                    while x != 1:
+                        x = x - 1
+                        sms = bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text=f"""Иди нахуй {x}""")
+                        time.sleep(0.3)
+                    if del_msg(message.chat.id, [sms.id, message.message_id]):
+                        pass
+                        #print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
+                else:
+                    #print("\nCLEAR_STEP_HANDLER:", bot.clear_step_handler_by_chat_id(message.chat.id))
+                    try:
+                        del_msg(message.chat.id, fenix.array_to_del)
+                    except Exception as E:
+                        print(f"pohui: {E}")
+                    init_new_dict(message)
+                    errors = ''
+                    if fenix.num_of_mistakes_ot == fenix.num_of_mistakes_do:
+                        errors = f"{fenix.num_of_mistakes_ot} шт"
+                    else:
+                        errors = f"{fenix.num_of_mistakes_ot}-{fenix.num_of_mistakes_do}"
+                    times = ''
+                    if fenix.time_to_wait_ot == fenix.time_to_wait_do:
+                        times = f"{fenix.time_to_wait_ot} сек"
+                    else:
+                        times = f"{fenix.time_to_wait_ot}-{fenix.time_to_wait_do}"
+                    
+                    key_new = make_keyboard([['1. Решить тесты', 0],
+                                            [f'2. Изменить ошибки ({errors})', 1], 
+                                            [f'3. Изменить время ожидания ({times})   ', 2], 
+                                            ['4. Изменить данные аккаунта', 3],
+                                            ['5. Выключить бота', 4]])
+
+                    sms = bot.send_message(message.from_user.id, text="""Выберите действие:"""
+                                        , reply_markup=key_new)
+                    #array_message[message.chat.id].append(message.message_id) - сообщение пользователя /start
+                    
+                    if len(array_message[message.chat.id]) != 0:
+                        print("\n----------------------------------\nWARNING - ОСТАЛОСЬ НЕКОТОРОЕ КОЛИЧЕСТВО СООБЩЕНИЙ В СПИСКЕ - УДАЛЯЮ !!!")
+                        del_msg(message.chat.id, array_message[message.chat.id])
+                    
+                    array_message[message.chat.id].append(sms.id)
+                    print("array_message after:", array_message)
                 
-                array_message[message.chat.id].append(sms.id)
-                print("array_message after:", array_message)
 
 
             ############################################################
@@ -1294,24 +1349,40 @@ TELEGRAM-БОТ:
             ##################### УДАЛЕНИЕ ПРОСТО ТАК ОТПРАВЛЕННЫХ СООБЩЕНИЙ
             @bot.message_handler(content_types=['text'])
             def reakcia_na_no_name_sms_from_user(message):
-                print('''\n--—-----------------------------------------''')
-                name = str(message.from_user.username) + "(" +str(message.from_user.id) +", " + str(message.chat.id) +")"
-                print(f"\nПОЛУЧИЛ СМС от {name} (del через 2 секунды):", message.text)
-                sms = bot.reply_to(message, text="Пожалуйста, пользуйтесь кнопками!\n(сообщения будут удалены через 2)" )#+ str(x) + " секунды)")
-                x = 2
-                time.sleep(1)
-                while x != 1:
-                    x = x - 1
-                    bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text="Пожалуйста, пользуйтесь кнопками!\n(сообщения будут удалены через "+ str(x) + ")")
-                    time.sleep(1)
-                #print("FORWARDING SMS")
-                #sms3 = bot.forward_message(6239177054, message.chat.id, message.message_id)
-                #sms3 = bot.send_message(6239177054, text=message.text)
-                
-                if del_msg(message.chat.id, [sms.id, message.message_id]):
-                    print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
+                if str(message.chat.id) == str(get_chat_id()):
+                    PROVERKA_USER = True
+                    print(f"\nЗДРАВСТВУЙТЕ, ХОЗЯИН с id \'{message.chat.id}\'")
                 else:
-                    print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
+                    PROVERKA_USER = False
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
+                    print(f"\n!!!!!!ВНИМАНИЕ, В БОТ НАПИСАЛ ПОСТОРОНННИЙ с id \'{message.chat.id}\', посылаю нахуй")
+                if PROVERKA_USER == False:
+                    x = 3
+                    sms = bot.reply_to(message, text=f"""Иди нахуй {x}""")
+                    time.sleep(0.3)
+                    while x != 1:
+                        x = x - 1
+                        sms = bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text=f"""Иди нахуй {x}""")
+                        time.sleep(0.3)
+                    if del_msg(message.chat.id, [sms.id, message.message_id]):
+                        pass
+                        #print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}]")
+                else:
+                    print('''\n--—-----------------------------------------''')
+                    name = str(message.from_user.username) + "(" +str(message.from_user.id) +", " + str(message.chat.id) +")"
+                    print(f"\nПОЛУЧИЛ СМС от {name} (del через 2 секунды):", message.text)
+                    sms = bot.reply_to(message, text="Пожалуйста, пользуйтесь кнопками!\n(сообщения будут удалены через 2)" )#+ str(x) + " секунды)")
+                    x = 2
+                    time.sleep(1)
+                    while x != 1:
+                        x = x - 1
+                        bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text="Пожалуйста, пользуйтесь кнопками!\n(сообщения будут удалены через "+ str(x) + ")")
+                        time.sleep(1)
+                    if del_msg(message.chat.id, [sms.id, message.message_id]):
+                        print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
+                    else:
+                        print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
 
             ############################################################################################################################
             ############################################################################################################################
@@ -1660,7 +1731,7 @@ TELEGRAM-БОТ:
             ######################################################################################################################################      
             
             try:
-                print('\n-------------------------------------------------- \nЗапускаю бота! Общайтесь с ним через свой любимый Telegram!\n!!!Чтобы прервать его работу нажмите Ctrl+C либо на интерактивную кнопку в самом боте')
+                print('\n-------------------------------------------------- \nЗапускаю бота! Общайтесь с ним через свой любимый Telegram!')
                 num_of_error = 1
                 num_of_error_at_all = 50
                 while True:
@@ -1671,17 +1742,17 @@ TELEGRAM-БОТ:
                             #print("hzhzhhzhzhhzhzhzzzhzhzhzhhh")
                             num_of_error = 1
                         except requests.exceptions.ConnectionError as E:
-                            if num_of_error <= num_of_error_at_all:
-                                #print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
-                                print(f"\n!!!Проблема с интернетом (1), пробую еще раз через 10 секунд ({num_of_error}/{num_of_error_at_all})...")
-                                num_of_error += 1
-                                time.sleep(10)
-                            else:
-                                print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
-                                QUIT_BOT = True
-                                bot.stop_bot()
-                                break
-                                #quit()
+                            #if num_of_error <= num_of_error_at_all:
+                            #print(f"\n!!!Проблема с интернетом 1 ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                            print(f"\n!!!Проблема с интернетом (1), пробую еще раз через 10 секунд...")# ({num_of_error}/{num_of_error_at_all})...")
+                            num_of_error += 1
+                            time.sleep(10)
+                            #else:
+                            #    print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                            #    QUIT_BOT = True
+                            #    bot.stop_bot()
+                            #    break
+                            #    #quit()
                         except KeyboardInterrupt:
                             print("\n--------------------------------------------------\nБот остановлен!\n")
                             #QUIT_BOT = True
@@ -1698,17 +1769,17 @@ TELEGRAM-БОТ:
                                 QUIT_BOT = True
                                 quit()
                         except Exception as E:
-                            if num_of_error <= num_of_error_at_all:
-                                #print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
-                                print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 10 секунд ({num_of_error}/{num_of_error_at_all})...")
-                                num_of_error += 1
-                                time.sleep(10)
-                            else:
-                                print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
-                                QUIT_BOT = True
-                                bot.stop_bot()
-                                break
-                                #quit()
+                            #if num_of_error <= num_of_error_at_all:
+                            #print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 3 секунды ({num_of_error}/{num_of_error_at_all})...")
+                            print(f"\n!!!Проблема с чем-то ({str(E)}), пробую еще раз через 10 секунд...")# ({num_of_error}/{num_of_error_at_all})...")
+                            num_of_error += 1
+                            time.sleep(10)
+                            #else:
+                            #    print("\n--------------------------------------------------\nНе получается переподключиться, выхожу!!\n")
+                            #    QUIT_BOT = True
+                            #    bot.stop_bot()
+                            #    break
+                            #    #quit()
                     else:
                         print(f"QUIT_BOT == True, выхожу..")
                         bot.stop_bot()
