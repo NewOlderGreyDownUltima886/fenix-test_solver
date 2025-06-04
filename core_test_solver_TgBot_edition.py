@@ -1682,10 +1682,10 @@ TELEGRAM-БОТ:
                         except Exception as E:
                             if "Unauthorized" in str(E):
                                 print("В ТОКЕНЕ ОШИБКА! Попробуйте изменить его...")
-                                continue   
+                                break   
                             else:
                                 print(f"!!!!!!!!!!!!!!!\n—> 2 КРИТИЧЕСКАЯ! ОШИБКА! КОТОРУЮ! Я! ВИЖУ! ВПЕРВЫЕ!, СООБЩИ! ОБ! ЭТОМ! АДМИНУ!!!!!!!!!!!!, текст ошибки: {str(E)}")
-                                continue
+                                break
                         except Exception as E:
                             if num_of_error <= num_of_error_at_all:
                                 #print(f"\n!!!Проблема с чем-то, пробую еще раз через 2 секунды ({num_of_error}/{num_of_error_at_all})...")
