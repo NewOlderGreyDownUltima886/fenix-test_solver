@@ -1545,6 +1545,11 @@ TELEGRAM-БОТ:
                 counter = 0
                 MAIN_SMS = [0 for i in range(len(array_of_num_tests_to_solve))]                                                                                               #СЧЕТЧИК ИЗ (ИНДЕКС+1)
                 while counter < len(array_of_num_tests_to_solve):
+                    
+                    if fenix.now_semestr != -1:
+                        if fenix.load_semestr(fenix.now_semestr):
+                            print("УСПЕШНОООООООООООООО")
+
                     num_testing = int(array_of_num_tests_to_solve[counter]) - 1  #ИНДЕКС РЕШАЕМОГО ТЕСТА
                     name_of_test = list_of_vsex_testov[num_testing][3]
                     
