@@ -1,10 +1,23 @@
-gay_words = ['ConnectTimeout', 'Connection broken', 'ConnectionAbortedError', 'Max retries', 'HTTPConnectionPool','Connection to eport.fesmu.ru timed out', 'timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted','prematurely', 'ConnectionResetError']
+gay_words = ['ConnectTimeout', 'Connection broken', 'ConnectionAbortedError', 'Max retries', 'HTTPConnectionPool','Connection to eport.fesmu.ru timed out', 'timed out', 'getaddrinfo failed', 'Network is unreachable', 'Failed to establish a new connection', 'Connection aborted', 'ConnectionResetError']
 
 headers1 = {
 "Host": "eport.fesmu.ru",
 "Cache-Control": "max-age=0",
 "Origin": "http://eport.fesmu.ru",
 "Content-Type": "application/x-www-form-urlencoded",
+"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+"Upgrade-Insecure-Requests": "1",
+#"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0",
+"User-Agent" : "Mozilla/5.0 (X11; Linux i686; rv:128.0) Gecko/20100101 Firefox/128.0",
+"Accept-Encoding": "gzip, deflate, br",
+"Connection": "keep-alive",
+}
+
+headers2 = {
+"Host": "eport.fesmu.ru",
+"Cache-Control": "max-age=0",
+"Origin": "http://eport.fesmu.ru",
+"Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryde7GA0muoqJhztNm",
 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
 "Upgrade-Insecure-Requests": "1",
 #"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0",
