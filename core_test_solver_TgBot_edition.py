@@ -10,7 +10,7 @@
 #7. дима пошел нахер (+++)
 
 import os, sys
-import re
+import re, uuid
 import requests
 import time, random, datetime, timedelta
 from bs4 import BeautifulSoup
@@ -204,6 +204,7 @@ TELEGRAM-БОТ:
                     #Для работы с сессией
                     self.gay_words = prikoli.gay_words
                     self.headers1 = prikoli.headers1
+                    self.headers2 = prikoli.headers2
                     self.SessionId=""
 
                     self.auth_bool = False
@@ -223,6 +224,8 @@ TELEGRAM-БОТ:
                     self.num_of_pred = -1
                     self.list_of_preds = []
                     self.list_of_vsex_testov = []
+
+                    self.now_semestr = -1    #-1 означает сейчашний
                     
                     self.array_to_del = []
                     
@@ -256,15 +259,20 @@ TELEGRAM-БОТ:
 
 
                 #Главная функция аутентификации
-                def make_a_request(self, url, data, silens=True, streaming=False, num_of_error=0, auth_mode=False, get_request=False):
+                def make_a_request(self, url, data, silens=True, streaming=False, num_of_error=0, auth_mode=False, get_request=False, multipart_form_data=False):
                     num_of_error=num_of_error
                     try:
                         if get_request == True:
+                            time.sleep(0.5)
                             a = requests.get(url, headers=self.headers1, cookies=self.get_cookies(), stream=streaming)            #ДЛя GET-запросов
-                            time.sleep(0.5)
-                        else:   
-                            a = requests.post(url, data=data, headers=self.headers1, cookies=self.get_cookies(), stream=streaming) #Для POST-запросов
-                            time.sleep(0.5)
+                        else:
+                            if multipart_form_data == False:
+                                time.sleep(0.5)       
+                                a = requests.post(url, data=data, headers=self.headers1, cookies=self.get_cookies(), stream=streaming) #Для POST-запросов
+                            else:
+                                #print("IAMHERE IAMHERE IAMHERE")
+                                #files = {'file' : ("", open('image08.jpg', 'rb'), 'application/octet-stream')}
+                                a = requests.post(url, data=data, headers=self.headers2, cookies=self.get_cookies(), stream=streaming) #Для POST-запросов b
                     except Exception as E:
                         print(f'''\n----------------------------ERROR-------------------------------------------''')
                         for x in self.gay_words:
@@ -410,6 +418,26 @@ TELEGRAM-БОТ:
                         QUIT_BOT = True
                         quit()
 
+                def load_semestr(self, num_of_sem, num_of_try=0):
+                    num_of_try += 1
+                    data_to_load_need_semestr = f'------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\x0a/wEPDwUKMTE4NDI1MjM5MQ9kFgJmD2QWAgIDD2QWAmYPFgIeB2VuY3R5cGUFE211bHRpcGFydC9mb3JtLWRhdGEWBgIPD2QWDAIBDw8WAh4EVGV4dAWCAdCX0LTRgNCw0LLRgdGC0LLRg9C50YLQtSAg0KHQotCQ0J3QmNCh0JvQkNCSINCh0KLQkNCd0JjQodCb0JDQktCe0JLQmNCnLCDQstGL0LHQtdGA0LjRgtC1INC90YPQttC90YvQuSDRgNCw0LfQtNC10Lsg0YDQsNCx0L7RgtGLOiBkZAILDw8WAh8BBRw8dGFibGUgY2xhc3M9J21lc3MnPjwvdGFibGU+ZGQCDQ8PFgIfAQXXCjx0YWJsZSBjbGFzcz0nbWVzcyc+PHRyPjx0ZD48YSBocmVmPSdSZWFkTXNnLmFzcHg/aWQ9MjEwNjUwJz7QstC+0L/RgNC+0YHRiyDQuiDQt9Cw0YfQtdGC0YMg0L/QviDQsdC40L7RjdGC0LjQutC1PC9hPjwvdGQ+PHRkPjE2LjA1LjIwMjUgMTE6MTc8L3RkPjx0ZD48aW1nIHNyYz0ncGZpbGUuZ2lmJyBhbHQ9J9CY0LzQtdC10YLRgdGPINCy0LvQvtC20LXQvdC90YvQuSDRhNCw0LnQuycvPjwvdGQ+PHRkPjxzcGFuIHN0eWxlPSJjb2xvcjogIzAwODgwMCI+KNCf0YDQvtGB0LzQvtGC0YAgMTcuMDUuMjAyNSAwMToxMSk8L3NwYW4+PC90ZD48L3RyPjx0cj48dGQ+PGEgaHJlZj0nUmVhZE1zZy5hc3B4P2lkPTIxMDAwNic+0JTQlyDQuiDRgtC10LzQtSAxMywgItCf0LDQu9C70LjQsNGCLiDQv9C+0LzQvtGJ0YwiLCDQt9Cw0YfQtdGCLCA0INGB0LXQvNC10YHRgtGALjwvYT48L3RkPjx0ZD4wNC4wNS4yMDI1IDE1OjA3PC90ZD48dGQ+PGltZyBzcmM9J3BmaWxlLmdpZicgYWx0PSfQmNC80LXQtdGC0YHRjyDQstC70L7QttC10L3QvdGL0Lkg0YTQsNC50LsnLz48L3RkPjx0ZD48c3BhbiBzdHlsZT0iY29sb3I6ICMwMDg4MDAiPijQn9GA0L7RgdC80L7RgtGAIDI4LjA1LjIwMjUgMjI6MjkpPC9zcGFuPjwvdGQ+PC90cj48dHI+PHRkPjxhIGhyZWY9J1JlYWRNc2cuYXNweD9pZD0yMDk2NTEnPtCeINGC0LXQu9C10LPRgNCw0Lwt0LrQsNC90LDQu9C1PC9hPjwvdGQ+PHRkPjI4LjA0LjIwMjUgMTU6MDY8L3RkPjx0ZD48L3RkPjx0ZD48c3BhbiBzdHlsZT0iY29sb3I6ICMwMDg4MDAiPijQn9GA0L7RgdC80L7RgtGAIDMwLjA0LjIwMjUgMTI6MDIpPC9zcGFuPjwvdGQ+PC90cj48dHI+PHRkPjxhIGhyZWY9J1JlYWRNc2cuYXNweD9pZD0yMDk0OTQnPtCU0L7QvNCw0YjQvdC10LUg0LfQsNC00LDQvdC40LUg0LTQu9GPINCf0Jcg4oSWIDEyLCDQodCUPC9hPjwvdGQ+PHRkPjI1LjA0LjIwMjUgMTc6NTk8L3RkPjx0ZD48aW1nIHNyYz0ncGZpbGUuZ2lmJyBhbHQ9J9CY0LzQtdC10YLRgdGPINCy0LvQvtC20LXQvdC90YvQuSDRhNCw0LnQuycvPjwvdGQ+PHRkPjxzcGFuIHN0eWxlPSJjb2xvcjogIzAwODgwMCI+KNCf0YDQvtGB0LzQvtGC0YAgMjMuMDUuMjAyNSAwMToyNCk8L3NwYW4+PC90ZD48L3RyPjx0cj48dGQ+PGEgaHJlZj0nUmVhZE1zZy5hc3B4P2lkPTIwODY4MSc+0JPQn9C10YDQtdC90L7RgSDQvtGC0YDQsNCx0LDRgtGL0LLQsNC90LjRjyDQt9Cw0L3Rj9GC0LjRjy48L2E+PC90ZD48dGQ+MDguMDQuMjAyNSAxNDo0NDwvdGQ+PHRkPjwvdGQ+PHRkPjxzcGFuIHN0eWxlPSJjb2xvcjogIzAwODgwMCI+KNCf0YDQvtGB0LzQvtGC0YAgMTAuMDQuMjAyNSAyMzoxMSk8L3NwYW4+PC90ZD48L3RyPjwvdGFibGU+ZGQCDw8UKwAGDxYCHwEFI9Cf0YDQtdC00YvQtNGD0YnQuNC5INGB0LXQvNC10YHRgtGAZGRkZGQ8KwAGAQAWAh4RU3ByaXRlQ3NzRmlsZVBhdGgFJH4vQXBwX1RoZW1lcy9SZWRXaW5lL0FTUHhCdXR0b24uc2tpbmQCEQ88KwAFAQAPFgIeBVZhbHVlBQEzZGQCFQ8PFgIfAQWKAtCf0YDQuCDQvdC10L7QsdGF0L7QtNC40LzQvtGB0YLQuCDRgNCw0LHQvtGC0Ysg0YEg0YLQtdGB0YLQsNC80Lgg0LjQu9C4INC30LDQtNCw0YfQsNC80Lgg0L/RgNC10LTRi9C00YPRidC40YUg0YHQtdC80LXRgdGC0YDQvtCyIC0g0LLQstC10LTQuNGC0LUg0L3Rg9C20L3Ri9C5INGB0LXQvNC10YHRgtGALCDQutC70LjQutC90LjRgtC1INGN0YLRgyDQutC90L7Qv9C60YMsINC30LDRgtC10Lwg0LLRi9Cx0LXRgNC40YLQtSDQvdGD0LbQvdGL0Lkg0YDQsNC30LTQtdC7ZGQCEQ88KwAFAQAPFgIfAwUBNGRkAhMPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCAgEPZBYCZg9kFgJmD2QWAmYPZBYCAgEPZBYEAgsPFCsABQ8WAh4PRGF0YVNvdXJjZUJvdW5kZ2RkZDwrAAcBBg9kEBYBZhYBFCsAARYCHg9Db2xWaXNpYmxlSW5kZXhmZBYAZAIND2QWAmYPZBYCZg9kFgJmD2QWAgIBDxQrAAVkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh8FZmQWAGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhIFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE1BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjcFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjQFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b241BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTYFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yMAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE0BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjMFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE5BSNjdGwwMCRNYWluQ29udGVudCRBU1B4UG9wdXBDb250cm9sMQUwY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEkQVNQeEJ1dHRvbjEyBSDvb++6gljwOK1V7pUsREDVaFl+6pUvGby2SkUd7u0=\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAuJubBwb78LvuuSObzJAouN05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8np0oQvoQi9QI5PLXj7jvQU/HrsHh4rbLunEY1KdFMG+x\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a{num_of_sem}\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton7\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a{num_of_sem}\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm--\x0d\x0a'
+                    a = self.make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_to_load_need_semestr, multipart_form_data=True)
+                    soup = BeautifulSoup(a.text, 'html.parser')
+                    arr = soup.select('div[id="ctl00_MainContent_ASPxButton7_CD"] > span')
+                    print(f"Пробую {num_of_try} раз поменять семестр...")
+                    #print(f"Len: {len(arr)}")
+                    print(f"Array: {arr}\n")
+                    if len(arr) > 0:
+                        for i in arr:
+                            #print(f'="{i.text}"')
+                            if "Вернуться в текущий семестр" in str(i.text):
+                                self.now_semestr = num_of_sem
+                                return True
+                    return self.load_semestr(num_of_sem, num_of_try=num_of_try)
+
+
+
+
                 #Войти в тест с известным num_pred и num_test
                 #POST /eport/eport/studtst1.aspx HTTP/1.1
                 def enter_current_test(self, num_of_pred=0, num_of_test=0):
@@ -428,10 +456,24 @@ TELEGRAM-БОТ:
                 def print_predmets_and_chose_it_step1(self):
                     #1 - Подгружаем список предметов
                     result = []
-                    data_chose_some_test_from_list1 ="------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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iAtINCy0LLQtdC00LjRgtC1INC90YPQttC90YvQuSDRgdC10LzQtdGB0YLRgCwg0LrQu9C40LrQvdC40YLQtSDRjdGC0YMg0LrQvdC+0L/QutGDLCDQt9Cw0YLQtdC8INCy0YvQsdC10YDQuNGC0LUg0L3Rg9C20L3Ri9C5INGA0LDQt9C00LXQu2RkAhEPPCsABQEADxYCHwMFATRkZAITD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWBAILDxQrAAUPFgIeD0RhdGFTb3VyY2VCb3VuZGdkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh4PQ29sVmlzaWJsZUluZGV4ZmQWAGQCDQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ8UKwAFZGRkPCsABwEGD2QQFgFmFgEUKwABFgIfBWZkFgBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUjY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEFMGN0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxJEFTUHhCdXR0b24xMtz5qfbiMbMeISAR/QvG06v5dpRCChvKqSK05ZSRup7m\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAsLNa6a+9G22QqI86rItVBI05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8nk/PEZpnaVcCpNnaj/+3aAnk78Bg6t2TRTu0+rVkX32c\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a3\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundarynaBB3GGbJd0GJGGB--\x0d\x0a"
-                    a = self.make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_chose_some_test_from_list1)
+
+                    #для стартового состояния
+                    data_chose_some_test_from_list1 = f'------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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YDQuCDQvdC10L7QsdGF0L7QtNC40LzQvtGB0YLQuCDRgNCw0LHQvtGC0Ysg0YEg0YLQtdGB0YLQsNC80Lgg0LjQu9C4INC30LDQtNCw0YfQsNC80Lgg0L/RgNC10LTRi9C00YPRidC40YUg0YHQtdC80LXRgdGC0YDQvtCyIC0g0LLQstC10LTQuNGC0LUg0L3Rg9C20L3Ri9C5INGB0LXQvNC10YHRgtGALCDQutC70LjQutC90LjRgtC1INGN0YLRgyDQutC90L7Qv9C60YMsINC30LDRgtC10Lwg0LLRi9Cx0LXRgNC40YLQtSDQvdGD0LbQvdGL0Lkg0YDQsNC30LTQtdC7ZGQCEQ88KwAFAQAPFgIfAwUBNGRkAhMPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCAgEPZBYCZg9kFgJmD2QWAmYPZBYCAgEPZBYEAgsPFCsABQ8WAh4PRGF0YVNvdXJjZUJvdW5kZ2RkZDwrAAcBBg9kEBYBZhYBFCsAARYCHg9Db2xWaXNpYmxlSW5kZXhmZBYAZAIND2QWAmYPZBYCZg9kFgJmD2QWAgIBDxQrAAVkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh8FZmQWAGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhIFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE1BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTEFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xMwUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjcFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xBR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjQFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b241BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTYFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24yMAUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE0BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNgUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjMFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNwUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE5BSNjdGwwMCRNYWluQ29udGVudCRBU1B4UG9wdXBDb250cm9sMQUwY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEkQVNQeEJ1dHRvbjEyBSDvb++6gljwOK1V7pUsREDVaFl+6pUvGby2SkUd7u0=\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAuJubBwb78LvuuSObzJAouN05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8np0oQvoQi9QI5PLXj7jvQU/HrsHh4rbLunEY1KdFMG+x\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox2\"\x0d\x0a\x0d\x0a3\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm--\x0d\x0a'
+                    
+                    #для измененного семака
+                    data_dif_semak = '------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ToolkitScriptManager1_HiddenField\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTTARGET\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATE\"\x0d\x0a\x0d\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XRlQ3NzRmlsZVBhdGgFIn4vQXBwX1RoZW1lcy9HbGFzcy9BU1B4QnV0dG9uLnNraW5kAhEPPCsABQEADxYCHgdWaXNpYmxlaGRkAhMPPCsABAEADxYCHwVoZGQCFQ8PFgIfAQW7AdCU0LvRjyDRgNCw0LHQvtGC0Ysg0YEg0YLQtdGB0YLQsNC80Lgg0LjQu9C4INC30LDQtNCw0YfQsNC80Lgg0YLQtdC60YPRidC10LPQviDRgdC10LzQtdGB0YLRgNCwINC60LvQuNC60L3QuNGC0LUg0Y3RgtGDINC60L3QvtC/0LrRgywg0LfQsNGC0LXQvCDQstGL0LHQtdGA0LjRgtC1INC90YPQttC90YvQuSDRgNCw0LfQtNC10LtkZAIRDzwrAAUBAA8WAh4FVmFsdWUFATRkZAITD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAgIBD2QWBAILDxQrAAUPFgIeD0RhdGFTb3VyY2VCb3VuZGdkZGQ8KwAHAQYPZBAWAWYWARQrAAEWAh4PQ29sVmlzaWJsZUluZGV4ZmQWAGQCDQ9kFgJmD2QWAmYPZBYCZg9kFgICAQ8UKwAFZGRkPCsABwEGD2QQFgFmFgEUKwABFgIfCGZkFgBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTgFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjExBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTMFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b243BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMQUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjIFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b240BR1jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uNQUeY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjE2BR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMjAFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xNAUdY3RsMDAkTWFpbkNvbnRlbnQkQVNQeEJ1dHRvbjYFHWN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24zBR5jdGwwMCRNYWluQ29udGVudCRBU1B4QnV0dG9uMTcFHmN0bDAwJE1haW5Db250ZW50JEFTUHhCdXR0b24xOQUjY3RsMDAkTWFpbkNvbnRlbnQkQVNQeFBvcHVwQ29udHJvbDEFMGN0bDAwJE1haW5Db250ZW50JEFTUHhQb3B1cENvbnRyb2wxJEFTUHhCdXR0b24xMi53NBOl6qu4wFVKHPIjoybvQRkcMLGkR2nAQDR9GUKX\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\x0d\x0a\x0d\x0a556E0939\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\x0d\x0a\x0d\x0a/wEdAAuhYsTgCA36NLf/CDhuV6SS05GkTiFJ5RGCGZo4MFlAWmJX/zM4Fq62BChlnvEOcV3H/Y6Ii2DoqGxCrv3qHaubI7ZJDWlRgaefdPW8BTEVtfksz20s2aJuEs5x2iFvUXC/Cz5d6MynVZDCnI40CgFMDJH1HO5EJDXub4y4Eu52UlPcgdOU1mpwY+veTx5eZwxMbGvsjNRUDd20juN1ZU1pJbOyFoUUWZYCdLvCz9c8nlAxHVtyzOPLm2jHRquz9k6nK0cwiJm4jP15HjpHkzg7\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxdescr\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftyp\"\x0d\x0a\x0d\x0a0\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hftxt\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPred\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfPrep\"\x0d\x0a\x0d\x0a-1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$hfSem\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxButton5\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxTextBox3\"\x0d\x0a\x0d\x0a4\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1WS\"\x0d\x0a\x0d\x0a0:0:-1:50:-10000:0:955px:500px:1\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxTextBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxMemo1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxListBox1CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxListBox1\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3DeletedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3InsertedItems\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00_MainContent_ASPxPopupControl1_ASPxCallbackPanel_ASPxListBox3CustomCallback\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$ASPxCallbackPanel$ASPxListBox3\"\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"ctl00$MainContent$ASPxPopupControl1$FileUpload1\"; filename=\"\"\x0d\x0aContent-Type: application/octet-stream\x0d\x0a\x0d\x0a\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm\x0d\x0aContent-Disposition: form-data; name=\"DXScript\"\x0d\x0a\x0d\x0a1_42,1_75,2_27,2_34,2_41,1_68,1_65,2_36,1_41,2_40\x0d\x0a------WebKitFormBoundaryde7GA0muoqJhztNm--\x0d\x0a'
+                    
+                    if fenix.now_semestr == -1:
+                        a = self.make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_chose_some_test_from_list1, multipart_form_data=True)#, multipart_form_data=True)
+                    else:
+                        a = self.make_a_request("http://eport.fesmu.ru/eport/eport/startstu.aspx", data_dif_semak, multipart_form_data=True)
+                    
+                    #with open(f"hui{uuid.uuid4()}.html", "w+") as file:
+                    #    file.write(a.text)
+
+                    #a = self.make_a_request("http://eport.fesmu.ru/eport/eport/studtst1.aspx", "hui", get_request=True)
                     soup = BeautifulSoup(a.text, 'html.parser')
-                    pred_list = soup.select('table[id="ctl00_MainContent_ASPxPopupControl1_ASPxListBox1_LBT"] > tr > td ')
+                    pred_list = soup.select('table[id="ctl00_MainContent_ASPxCallbackPanel1_ASPxListBox2_LBT"] > tr > td > span')
                     
                     #2 - Выводим список предметов
                     itogoviy_print = ""
@@ -930,12 +972,17 @@ TELEGRAM-БОТ:
                         times = f"{fenix.time_to_wait_ot} сек"
                     else:
                         times = f"{fenix.time_to_wait_ot}-{fenix.time_to_wait_do}"
-                    
+                    semestr = ""
+                    if fenix.now_semestr == -1:
+                        semestr = "сейчашний"
+                    else:
+                        semestr = fenix.now_semestr
                     key_new = make_keyboard([['1. Решить тесты', 0],
                                             [f'2. Изменить ошибки ({errors})', 1], 
                                             [f'3. Изменить время ожидания ({times})   ', 2], 
                                             ['4. Изменить данные аккаунта', 3],
-                                            ['5. Выключить бота', 4]])
+                                            [f'5. Изменить семестр ({semestr})', 5],
+                                            ['6. Выключить бота', 4]])
 
                     sms = bot.send_message(message.from_user.id, text="""Выберите действие:"""
                                         , reply_markup=key_new)
@@ -948,6 +995,9 @@ TELEGRAM-БОТ:
                     array_message[message.chat.id].append(sms.id)
                     print("array_message after:", array_message)
                 
+
+
+
 
 
             ############################################################
@@ -970,11 +1020,17 @@ TELEGRAM-БОТ:
                 else:
                     times = f"{fenix.time_to_wait_ot}-{fenix.time_to_wait_do}"
                 
+                semestr = ""
+                if fenix.now_semestr == -1:
+                    semestr = "сейчашний"
+                else:
+                    semestr = fenix.now_semestr
                 key_new = make_keyboard([['1. Решить тесты', 0],
                                         [f'2. Изменить ошибки ({errors})', 1], 
                                         [f'3. Изменить время ожидания ({times})   ', 2], 
                                         ['4. Изменить данные аккаунта', 3],
-                                        ['5. Выключить бота', 4]])
+                                        [f'5. Изменить семестр ({semestr})', 5],
+                                        ['6. Выключить бота', 4]])
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=array_message[call.message.chat.id][0], 
                     text="""Выберите действие:""", reply_markup=key_new)  
 
@@ -1158,6 +1214,53 @@ TELEGRAM-БОТ:
                     print(f"pohui: {E}")
 
 
+            #####   СЕМЕСТР   #########################################################
+            @bot.callback_query_handler(func=lambda call: call.data == '5')
+            def change_semestr(call):
+                print("\n----------------------------------")
+                print("Введите желаемый семестр: ")
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Введите семестр (от 1 и до настоящего):", reply_markup=make_keyboard([['Отменить ввод❌', -1]]))  
+                bot.register_next_step_handler(call.message, change_semestr_next_step, call)
+            def change_semestr_next_step(message, call):
+                error = False
+                user_input = message.text
+                try:
+                    user_input = int(message.text)
+                    if user_input < 1 : error = True
+                    if user_input > 12 : error = True
+                    if error:
+                        print(f"1Вы допустили ошибку при вводе! Вы ввели: {user_input}")
+                        sms = bot.send_message(message.from_user.id, text=f"❌Не получилось установить семестр \"{user_input}\"!\nСообщения будут удалены через 2...")
+                    else:
+                        fenix.now_semestr = user_input
+                        sms = bot.send_message(message.from_user.id, text=f"✅Установлен {user_input} семестр\nСообщения будут удалены через 2...")
+                        print(f"Установлено {user_input} семестр")
+                except Exception as E:
+                    error = True
+                    print(f"3Вы допустили ошибку при вводе семестра! Вы ввели: {user_input}, error: {str(E)}")
+                    sms = bot.send_message(message.from_user.id, text=f"❌Не получилось установить семестр \"{user_input}\"!\nСообщения будут удалены через 2...")
+                    print('''\n--—-----------------------------------------''')
+
+                #И теперь удаляем их
+                x = 2
+                time.sleep(1)
+                while x != 1:
+                    x = x - 1
+                    if error:
+                        sms = bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text=f"❌Не получилось установить семестр \"{user_input}\"!\nСообщения будут удалены через {x}...")
+                    else:
+                        sms = bot.edit_message_text(chat_id=message.chat.id, message_id=sms.id, text=f"✅Установлен {user_input} семестр\nСообщения будут удалены через {x}...")
+                    time.sleep(1)
+                if del_msg(message.chat.id, [sms.id, message.message_id]):
+                    print(f" ——> УДАЛЕНЫ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
+                else:
+                    print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  [{sms.id}, {message.message_id}]")
+                try:
+                    return_to_start_message(call)
+                except Exception as E:
+                    print(f"pohui: {E}")
+
+
             ###########################################################################
             @bot.callback_query_handler(func=lambda call: call.data == '0')
             def test_solver(call):
@@ -1166,15 +1269,21 @@ TELEGRAM-БОТ:
                 except Exception as E:
                     print(f"pohui: {E}")
                 print("\nCLEAR_STEP_HANDLER:", bot.clear_step_handler_by_chat_id(call.message.chat.id))
-                print("iamhere1")
+                #print("iamhere1")
                 if fenix.get_login() and fenix.get_pass():
-                    print("iamhere2")
+                    #print("iamhere2")
                     privetstvie = fenix.auth()
                     if privetstvie:
-                        print("iamhere3")
+                        #print("iamhere3")
+
+                        if fenix.now_semestr != -1:
+                            #print(f"ВХОЖУ В СЕМЕСТР {fenix.now_semestr}")
+                            if fenix.load_semestr(fenix.now_semestr):
+                                print("Успешно!")
+
                         start_to_solve_test(call, privetstvie)
                     else:
-                        print("iamhere4")
+                        #print("iamhere4")
                         sms = bot.send_message(call.message.chat.id, text=f"❌Кажется в данных ошибка!!! Попробуйте изменить логин или пароль\nСообщения будут удалены через 2...")
                         print("Кажется в данных ошибка!!! Попробуйте изменить логин или пароль\nСообщения будут удалены через 2...")
                         x = 2
@@ -1188,12 +1297,12 @@ TELEGRAM-БОТ:
                         else:
                             print(f" ——> ERROR: НЕ ПОЛУЧИЛОСЬ УДАЛИТЬ НЕНУЖНЫЕ СООБЩЕНИЯ:  {fenix.array_to_del}")
                 else:
-                    print("iamhere5")
+                    #print("iamhere5")
                     enter_new_data_LOGIN(call)
             
             @bot.callback_query_handler(func=lambda call: call.data == '3')
             def enter_new_data_LOGIN(call):
-                print("iamhere6")
+                #print("iamhere6")
                 fenix.array_to_del = []
                 log1 = fenix.get_login()
                 pass1 = fenix.get_pass()
@@ -1242,7 +1351,7 @@ TELEGRAM-БОТ:
                 return_to_start_message(call)	
 
             def start_to_solve_test(call, privetstvie):
-                print("okkkkkkkkkkkkkkkkkkkk")
+                #print("okkkkkkkkkkkkkkkkkkkk")
                 fenix.list_of_preds = fenix.print_predmets_and_chose_it_step1()
                 new_key = make_keyboard_for_non_known_len_of_array(fenix.list_of_preds, 20, return_key=True)
                 #sms = bot.send_message(call.message.chat.id, text=f"Доступные вам тесты:", reply_markup=new_key)
