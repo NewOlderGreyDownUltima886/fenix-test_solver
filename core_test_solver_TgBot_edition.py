@@ -685,36 +685,33 @@ TELEGRAM-БОТ:
                         if "Эта страница ошибки может содержать важные данные, так как ASP.NET настроено на показ подробных сообщений об ошибках с помощью" in str(a):
                             return False
                         
-                        #print("Всё хорошо, тест закрылся")
+                        print("Всё хорошо, тест закрылся")
                         return True
                     
                     if test_na_zakritiy_test_izza_istekshego_vremeni(a):
                         return True
                     else:
-                        #print("\n\nстарый ааааааааааааа\n\n")
-                        #print(a.request.body)
-                        #print(a.text)
+                        self.auth()
+                        time.sleep(2)
+
                         a = self.enter_current_test(num_pred_r, num_testing)  #входим
 
+
                         soup = BeautifulSoup(a.text, 'html.parser')
+
                         b4 = soup.select('h1')
-                        
                         for i, item in enumerate(b4):
                             if "Ошибка сервера" in item.text:
-                                print("\n\n\n\n\n\n\n Последний раз пробую решить мирно реауфом, жду 10 секунд....")
-                                try:
-                                    for i in range(10):
-                                        time.sleep(1)
-                                except KeyboardInterrupt:
-                                    print("Хорошо! Перестаю")
+                                print("\n\n!!!! Последний раз пробую решить мирно реауфом, жду 5 секунд....")
+                                for i in range(5):
+                                    time.sleep(1)
                                 self.auth()
-                                a = self.enter_current_test(num_pred_r, num_testing) 
-
-
+                                return self.close_test(num_pred_r=num_pred_r, num_testing=num_testing)
+                                #a = self.enter_current_test(num_pred_r, num_testing) 
 
 
                         soup = BeautifulSoup(a.text, 'html.parser')
-                        
+                
                         # 1 проверка на уже прорешанный ранее тест с результатом меньше 70 %
                         b2 = soup.select('label[id="ctl00_MainContent_ASPxLabel10"]')
                         for i in range(len(b2)): 
@@ -736,6 +733,7 @@ TELEGRAM-БОТ:
                     #print(a.request.body)
                     #print(a.text)
                     print("\n\n")
+                    self.auth()
                     return self.close_test(num_pred_r, num_testing)
 
 
