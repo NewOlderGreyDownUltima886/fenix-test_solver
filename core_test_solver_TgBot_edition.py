@@ -614,20 +614,40 @@ TELEGRAM-БОТ:
                     soup = BeautifulSoup(a.text, 'html.parser')
                     b = soup.select('table.btntest > tr > td > span[id^="ctl00_MainContent_Label"]')
                     answers_array = [["0" for i in range(5)],["U" for i in range(5)]]
-                    #print("———>Before: ", answers_array)
-                    for i in range(len(b)-1):
-                        if "Salmon" in str(b[i+1]):
-                            answers_array[0][i] = "1"
-                            answers_array[1][i] = "C"
-                        elif "Aquamarine" in str(b[i+1]):
-                            answers_array[0][i] = "1"
-                            answers_array[1][i] = "C"
-                        else:
-                            answers_array[0][i] = "0"
-                            answers_array[1][i] = "U"
-                    #print("———>Answers:", answers_array)
+
+                    itog_res = ""
+                    print(f"\n?{str(b[0].text).strip()}")
+                    itog_res += f"\n\n?{str(b[0].text).strip()}"
+
+                    try:
+                        for j, x in enumerate(b):
+                            if j != 0:
+                                i = j-1
+                                if "Salmon" in str(x):
+                                    answers_array[0][i] = "1"
+                                    answers_array[1][i] = "C"
+                                    print(f"+{j}. {str(x.text).strip()}")
+                                    itog_res += f"\n+{j}. {str(x.text).strip()}"
+                                elif "Aquamarine" in str(b[i+1]):
+                                    answers_array[0][i] = "1"
+                                    answers_array[1][i] = "C"
+                                    print(f"+{j}. {str(x.text).strip()}")
+                                    itog_res += f"\n+{j}. {str(x.text).strip()}"
+                                else:
+                                    answers_array[0][i] = "0"
+                                    answers_array[1][i] = "U"
+                                    print(f"-{j}. {str(x.text).strip()}")
+                                    itog_res += f"\n-{j}. {str(x.text).strip()}"
+                    except IndexError:
+                        return self.go_to_check_answer5()
+
+                    #with open(f"chem/{str(self.name_of_test).strip()}.txt", "a+", encoding="utf-8") as file:
+                    #    file.write(f"{itog_res}")
+                    #with open(f"chem/semestr1.txt", "a+", encoding="utf-8") as file:
+                    #    file.write(f"{itog_res}")
 
                     return answers_array
+
 
 
 
