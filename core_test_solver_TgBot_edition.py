@@ -640,6 +640,9 @@ TELEGRAM-БОТ:
                                     itog_res += f"\n-{j}. {str(x.text).strip()}"
                     except IndexError:
                         return self.go_to_check_answer5()
+                    except Exception:
+                        print("\n!!!!!EFfsef WEFEWSFSEFSEFefsefsefsef\n")
+                        return self.go_to_check_answer5()
 
                     #with open(f"chem/{str(self.name_of_test).strip()}.txt", "a+", encoding="utf-8") as file:
                     #    file.write(f"{itog_res}")
